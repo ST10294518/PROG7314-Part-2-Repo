@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.winx.app.screens.LoginScreen
 import com.winx.app.screens.WelcomeScreen
+import com.winx.app.screens.RegisterScreen
 
 @Composable
 fun AppNavigation() {
@@ -33,14 +34,16 @@ fun AppNavigation() {
                     // Dashboard navigation will be connected later
                 },
                 onCreateAccountClick = {
-                    // Register navigation will be connected later
+                    navController.navigate("register")
                 }
             )
         }
-
-        // Register screen - coming next
         composable("register") {
-            // Register screen will be added here
+            RegisterScreen(
+                onCreateAccountClick = {
+                    navController.navigate("dashboard")
+                }
+            )
         }
 
         // Dashboard - coming later
