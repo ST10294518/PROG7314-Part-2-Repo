@@ -1,5 +1,10 @@
 package com.winx.app.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.winx.app.R
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,12 +48,14 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text(
-            text = "WINX",
-            style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
-            color = WinxDarkBlue
+        Image(
+            painter = painterResource(id = R.drawable.winx_logo),
+            contentDescription = "Winx logo",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            contentScale = ContentScale.Fit
         )
-
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
