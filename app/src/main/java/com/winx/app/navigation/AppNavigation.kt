@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.winx.app.screens.LoginScreen
 import com.winx.app.screens.WelcomeScreen
 import com.winx.app.screens.RegisterScreen
+import com.winx.app.screens.DashboardScreen
 
 @Composable
 fun AppNavigation() {
@@ -46,9 +47,27 @@ fun AppNavigation() {
             )
         }
 
-        // Dashboard - coming later
         composable("dashboard") {
-            // Dashboard screen will be added later
+            DashboardScreen(
+                onAddEntryClick = {
+                    navController.navigate("entry")
+                },
+                onAddCountryClick = {
+                    // Countries screen will be connected later
+                },
+                onEntryClick = {
+                    navController.navigate("entry")
+                },
+                onCalendarClick = {
+                    // Calendar screen will be connected later
+                },
+                onCountriesClick = {
+                    // Countries screen will be connected later
+                },
+                onSettingsClick = {
+                    // Settings screen will be connected later
+                }
+            )
         }
 
         // Entry screen - coming later
