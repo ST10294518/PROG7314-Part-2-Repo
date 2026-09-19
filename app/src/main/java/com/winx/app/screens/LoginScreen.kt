@@ -1,10 +1,6 @@
 package com.winx.app.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import com.winx.app.R
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -25,17 +25,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.winx.app.R
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
-import com.winx.app.ui.theme.WinxPink
 import com.winx.app.ui.theme.WinxWhite
 
 @Composable
 fun LoginScreen(
     onLoginClick: () -> Unit = {},
-    onCreateAccountClick: () -> Unit = {}
+    onCreateAccountClick: () -> Unit = {},
+    onGoogleSignInClick: () -> Unit = {},
+    googleSignInLoading: Boolean = false,
+    googleSignInError: String? = null
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -56,11 +61,12 @@ fun LoginScreen(
                 .height(100.dp),
             contentScale = ContentScale.Fit
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "Capture places. Cherish moments.\nRemember every journey.",
-            style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge,
             color = WinxDarkBlue
         )
 
@@ -68,7 +74,7 @@ fun LoginScreen(
 
         Text(
             text = "Welcome Back !!",
-            style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineMedium,
             color = WinxDarkBlue
         )
 
@@ -78,9 +84,7 @@ fun LoginScreen(
             value = email,
             onValueChange = { email = it },
             modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text("Email")
-            },
+            label = { Text("Email") },
             singleLine = true,
             shape = RoundedCornerShape(12.dp)
         )
@@ -91,9 +95,7 @@ fun LoginScreen(
             value = password,
             onValueChange = { password = it },
             modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text("Password")
-            },
+            label = { Text("Password") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(12.dp)
@@ -103,7 +105,7 @@ fun LoginScreen(
 
         TextButton(
             onClick = {
-                // Forgot password will be connected later
+                // Forgot password will be connected later.
             },
             modifier = Modifier.align(Alignment.End)
         ) {
@@ -128,7 +130,51 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Login",
-                style = androidx.compose.material3.MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        HorizontalDivider()
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = "OR",
+            style = MaterialTheme.typography.bodyMedium,
+            color = WinxDarkBlue
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = onGoogleSignInClick,
+            enabled = !googleSignInLoading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            if (googleSignInLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.height(24.dp)
+                )
+            } else {
+                Text(
+                    text = "Continue with Google",
+                    color = WinxDarkBlue
+                )
+            }
+        }
+
+        if (googleSignInError != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = googleSignInError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
         }
 
