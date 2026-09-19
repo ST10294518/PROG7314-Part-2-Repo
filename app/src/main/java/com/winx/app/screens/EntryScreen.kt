@@ -82,7 +82,10 @@ fun EntryScreen(
     onVideosClick: () -> Unit = {},
     onCountriesClick: () -> Unit = {},
     onSaveClick: () -> Unit = {},
-    onCancelClick: () -> Unit = {}
+    onCancelClick: () -> Unit = {},
+
+    // Selected country can be supplied by the Countries screen/navigation.
+    selectedCountry: String = ""
 ) {
 
     // -------------------------------------------------------------
@@ -674,6 +677,95 @@ fun EntryScreen(
 
             Spacer(
                 modifier = Modifier.height(12.dp)
+            )
+
+
+            // ---------------------------------------------------------
+            // SELECTED COUNTRY
+            // ---------------------------------------------------------
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        enabled = true,
+                        onClick = onCountriesClick
+                    ),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WinxLightPink
+                )
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 15.dp
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Outlined.LocationOn,
+                        contentDescription = "Country",
+                        tint = WinxOrange,
+                        modifier = Modifier.size(22.dp)
+                    )
+
+
+                    Spacer(
+                        modifier = Modifier.width(12.dp)
+                    )
+
+
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+
+                        Text(
+                            text = "Country",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+
+                        Text(
+                            text = if (selectedCountry.isNotEmpty()) {
+                                selectedCountry
+                            } else {
+                                "Select a country"
+                            },
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (selectedCountry.isNotEmpty()) {
+                                WinxDarkBlue
+                            } else {
+                                Color.Gray
+                            }
+                        )
+                    }
+
+
+                    TextButton(
+                        onClick = onCountriesClick
+                    ) {
+
+                        Text(
+                            text = if (selectedCountry.isNotEmpty()) {
+                                "Change"
+                            } else {
+                                "Add"
+                            },
+                            color = WinxBlue
+                        )
+                    }
+                }
+            }
+
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
             )
 
 
