@@ -2,6 +2,8 @@ package com.winx.app.screens
 
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.widget.MediaController
+import android.widget.VideoView
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -48,6 +50,7 @@ import androidx.compose.material3.TextButton
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +66,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
@@ -93,6 +97,15 @@ fun EntryScreen(
     // -------------------------------------------------------------
 
     var selectedPictures by remember {
+        mutableStateOf<List<Uri>>(emptyList())
+    }
+
+
+    // -------------------------------------------------------------
+    // SELECTED VIDEOS
+    // -------------------------------------------------------------
+
+    var selectedVideos by remember {
         mutableStateOf<List<Uri>>(emptyList())
     }
 
@@ -129,6 +142,21 @@ fun EntryScreen(
 
             if (uris.isNotEmpty()) {
                 selectedPictures = uris
+            }
+        }
+
+
+    // -------------------------------------------------------------
+    // ANDROID VIDEO PICKER
+    // -------------------------------------------------------------
+
+    val videoPickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(3)
+        ) { uris ->
+
+            if (uris.isNotEmpty()) {
+                selectedVideos = uris
             }
         }
 
@@ -240,7 +268,14 @@ fun EntryScreen(
                         )
                     },
                     backgroundColor = WinxPurple,
-                    onClick = onVideosClick,
+                    onClick = {
+
+                        videoPickerLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.VideoOnly
+                            )
+                        )
+                    },
                     modifier = Modifier.weight(1f)
                 )
 
@@ -271,10 +306,13 @@ fun EntryScreen(
 
 
             // ---------------------------------------------------------
-            // PICTURE UPLOAD / PREVIEW AREA
+            // MEDIA UPLOAD / PREVIEW AREA
             // ---------------------------------------------------------
 
-            if (selectedPictures.isEmpty()) {
+            if (
+                selectedPictures.isEmpty() &&
+                selectedVideos.isEmpty()
+            ) {
 
                 // -----------------------------------------------------
                 // EMPTY UPLOAD AREA
@@ -358,81 +396,202 @@ fun EntryScreen(
                 // SELECTED PICTURES
                 // -----------------------------------------------------
 
-                Column {
+                if (selectedPictures.isNotEmpty()) {
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Column {
 
-                        Text(
-                            text = "${selectedPictures.size} picture(s) selected",
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = WinxDarkBlue
-                        )
-
-
-                        TextButton(
-                            onClick = {
-
-                                picturePickerLauncher.launch(
-                                    PickVisualMediaRequest(
-                                        ActivityResultContracts.PickVisualMedia.ImageOnly
-                                    )
-                                )
-                            }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
 
                             Text(
-                                text = "Add More",
-                                color = WinxBlue
+                                text = "${selectedPictures.size} picture(s) selected",
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = WinxDarkBlue
                             )
+
+
+                            TextButton(
+                                onClick = {
+
+                                    picturePickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
+                                }
+                            ) {
+
+                                Text(
+                                    text = "Add More",
+                                    color = WinxBlue
+                                )
+                            }
+                        }
+
+
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
+
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+
+                            items(
+                                items = selectedPictures
+                            ) { uri ->
+
+                                val bitmap = remember(uri) {
+
+                                    context.contentResolver
+                                        .openInputStream(uri)
+                                        ?.use { inputStream ->
+
+                                            BitmapFactory.decodeStream(
+                                                inputStream
+                                            )
+                                        }
+                                }
+
+
+                                if (bitmap != null) {
+
+                                    Image(
+                                        bitmap = bitmap.asImageBitmap(),
+                                        contentDescription = "Selected picture",
+                                        modifier = Modifier
+                                            .size(110.dp)
+                                            .clip(
+                                                RoundedCornerShape(14.dp)
+                                            )
+                                    )
+                                }
+                            }
                         }
                     }
 
 
                     Spacer(
-                        modifier = Modifier.height(8.dp)
+                        modifier = Modifier.height(20.dp)
                     )
+                }
 
 
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
+                // -----------------------------------------------------
+                // SELECTED VIDEOS
+                // -----------------------------------------------------
 
-                        items(
-                            items = selectedPictures
-                        ) { uri ->
+                if (selectedVideos.isNotEmpty()) {
 
-                            val bitmap = remember(uri) {
+                    Column {
 
-                                context.contentResolver
-                                    .openInputStream(uri)
-                                    ?.use { inputStream ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
-                                        BitmapFactory.decodeStream(
-                                            inputStream
+                            Text(
+                                text = "${selectedVideos.size} video(s) selected",
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = WinxDarkBlue
+                            )
+
+
+                            TextButton(
+                                onClick = {
+
+                                    videoPickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.VideoOnly
                                         )
-                                    }
-                            }
+                                    )
+                                }
+                            ) {
 
-
-                            if (bitmap != null) {
-
-                                Image(
-                                    bitmap = bitmap.asImageBitmap(),
-                                    contentDescription = "Selected picture",
-                                    modifier = Modifier
-                                        .size(110.dp)
-                                        .clip(
-                                            RoundedCornerShape(14.dp)
-                                        )
+                                Text(
+                                    text = "Add More",
+                                    color = WinxBlue
                                 )
                             }
                         }
+
+
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
+
+
+                        // -------------------------------------------------
+                        // VIDEO PREVIEW
+                        // -------------------------------------------------
+
+                        key(selectedVideos.first()) {
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(210.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.Black
+                                )
+                            ) {
+
+                                AndroidView(
+                                    factory = { androidContext ->
+
+                                        VideoView(androidContext).apply {
+
+                                            setVideoURI(
+                                                selectedVideos.first()
+                                            )
+
+                                            val mediaController =
+                                                MediaController(androidContext)
+
+                                            mediaController.setAnchorView(this)
+
+                                            setMediaController(
+                                                mediaController
+                                            )
+
+                                            setOnPreparedListener { player ->
+
+                                                player.isLooping = true
+                                            }
+
+                                            start()
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+
+                        Spacer(
+                            modifier = Modifier.height(8.dp)
+                        )
+
+
+                        Text(
+                            text = "Tap the video controls to play or pause.",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
                     }
+
+
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
                 }
             }
 
@@ -459,7 +618,10 @@ fun EntryScreen(
             )
 
 
-            // Entry Title
+            // ---------------------------------------------------------
+            // ENTRY TITLE
+            // ---------------------------------------------------------
+
             OutlinedTextField(
                 value = title,
                 onValueChange = {
@@ -482,7 +644,10 @@ fun EntryScreen(
             )
 
 
-            // Location
+            // ---------------------------------------------------------
+            // LOCATION
+            // ---------------------------------------------------------
+
             OutlinedTextField(
                 value = location,
                 onValueChange = {
@@ -656,7 +821,10 @@ fun EntryScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
-                // Cancel
+                // -----------------------------------------------------
+                // CANCEL
+                // -----------------------------------------------------
+
                 TextButton(
                     onClick = onCancelClick,
                     modifier = Modifier.weight(1f)
@@ -682,7 +850,10 @@ fun EntryScreen(
                 }
 
 
-                // Save
+                // -----------------------------------------------------
+                // SAVE
+                // -----------------------------------------------------
+
                 Button(
                     onClick = onSaveClick,
                     modifier = Modifier
