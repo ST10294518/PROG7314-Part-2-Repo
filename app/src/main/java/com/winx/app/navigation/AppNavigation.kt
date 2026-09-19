@@ -8,6 +8,7 @@ import com.winx.app.screens.LoginScreen
 import com.winx.app.screens.WelcomeScreen
 import com.winx.app.screens.RegisterScreen
 import com.winx.app.screens.DashboardScreen
+import com.winx.app.screens.EntryScreen
 
 @Composable
 fun AppNavigation() {
@@ -70,9 +71,24 @@ fun AppNavigation() {
             )
         }
 
-        // Entry screen - coming later
         composable("entry") {
-            // Entry screen will be added later
+            EntryScreen(
+                onPicturesClick = {
+                    // Picture picker will be added next
+                },
+                onVideosClick = {
+                    // Video picker will be added next
+                },
+                onCountriesClick = {
+                    // Country screen will be added next
+                },
+                onSaveClick = {
+                    navController.popBackStack()
+                },
+                onCancelClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
