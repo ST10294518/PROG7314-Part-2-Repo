@@ -1,6 +1,7 @@
 package com.winx.app.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,18 +36,11 @@ import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxWhite
 
-data class TravelEntry(
-    val title: String,
-    val location: String,
-    val country: String,
-    val rating: Int,
-    val notes: String
-)
-
 @Composable
 fun EntriesScreen(
     entries: List<TravelEntry> = emptyList(),
-    onAddEntryClick: () -> Unit = {}
+    onAddEntryClick: () -> Unit = {},
+    onEntryClick: (TravelEntry) -> Unit = {}
 ) {
 
     Column(
@@ -104,7 +99,8 @@ fun EntriesScreen(
                 Icon(
                     imageVector = Icons.Outlined.LocationOn,
                     contentDescription = "No entries",
-                    tint = WinxBlue
+                    tint = WinxBlue,
+                    modifier = Modifier.size(30.dp)
                 )
 
                 Spacer(
@@ -146,7 +142,7 @@ fun EntriesScreen(
                     )
 
                     Spacer(
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier.size(4.dp)
                     )
 
                     Text(
@@ -169,7 +165,10 @@ fun EntriesScreen(
                 items(entries) { entry ->
 
                     TravelEntryCard(
-                        entry = entry
+                        entry = entry,
+                        onClick = {
+                            onEntryClick(entry)
+                        }
                     )
                 }
             }
@@ -184,11 +183,16 @@ fun EntriesScreen(
 
 @Composable
 private fun TravelEntryCard(
-    entry: TravelEntry
+    entry: TravelEntry,
+    onClick: () -> Unit
 ) {
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = WinxLightPink
@@ -203,7 +207,9 @@ private fun TravelEntryCard(
         ) {
 
             Text(
-                text = entry.title,
+                text = entry.title.ifBlank {
+                    "Untitled Entry"
+                },
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
                 color = WinxDarkBlue
@@ -224,11 +230,22 @@ private fun TravelEntryCard(
                 )
 
                 Spacer(
-                    modifier = Modifier.padding(3.dp)
+                    modifier = Modifier.size(3.dp)
                 )
 
                 Text(
-                    text = "${entry.location}, ${entry.country}",
+                    text = if (
+                        entry.location.isNotBlank() &&
+                        entry.country.isNotBlank()
+                    ) {
+                        "${entry.location}, ${entry.country}"
+                    } else if (entry.location.isNotBlank()) {
+                        entry.location
+                    } else if (entry.country.isNotBlank()) {
+                        entry.country
+                    } else {
+                        "Location not specified"
+                    },
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
