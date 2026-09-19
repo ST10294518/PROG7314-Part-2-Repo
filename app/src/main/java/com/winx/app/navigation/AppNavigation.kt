@@ -62,9 +62,8 @@ fun AppNavigation() {
 
             LoginScreen(
                 onLoginClick = {
-                    // Dashboard navigation will be connected later
+                    navController.navigate("dashboard")
                 },
-
                 onCreateAccountClick = {
                     navController.navigate("register")
                 }
