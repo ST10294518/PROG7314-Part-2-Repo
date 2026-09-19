@@ -21,6 +21,7 @@ import com.winx.app.screens.RegisterScreen
 import com.winx.app.screens.TravelEntry
 import com.winx.app.screens.WelcomeScreen
 import kotlinx.coroutines.launch
+import com.winx.app.screens.CalendarScreen
 
 @Composable
 fun AppNavigation() {
@@ -193,7 +194,7 @@ fun AppNavigation() {
                 },
 
                 onCalendarClick = {
-                    // Calendar screen will be connected later
+                    navController.navigate("calendar")
                 },
 
                 onCountriesClick = {
@@ -308,6 +309,18 @@ fun AppNavigation() {
                 },
 
                 onCancelClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        // =========================================================
+// CALENDAR
+// =========================================================
+
+        composable("calendar") {
+
+            CalendarScreen(
+                onBackClick = {
                     navController.popBackStack()
                 }
             )
