@@ -1,5 +1,13 @@
 package com.winx.app.screens
 
+import android.graphics.BitmapFactory
+import android.net.Uri
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,9 +22,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CalendarToday
@@ -25,6 +36,7 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Videocam
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -33,26 +45,32 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
 import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
+
 
 @Composable
 fun EntryScreen(
@@ -63,10 +81,61 @@ fun EntryScreen(
     onCancelClick: () -> Unit = {}
 ) {
 
-    var title by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
-    var rating by remember { mutableIntStateOf(0) }
+    // -------------------------------------------------------------
+    // CONTEXT
+    // -------------------------------------------------------------
+
+    val context = LocalContext.current
+
+
+    // -------------------------------------------------------------
+    // SELECTED PICTURES
+    // -------------------------------------------------------------
+
+    var selectedPictures by remember {
+        mutableStateOf<List<Uri>>(emptyList())
+    }
+
+
+    // -------------------------------------------------------------
+    // ENTRY DETAILS
+    // -------------------------------------------------------------
+
+    var title by remember {
+        mutableStateOf("")
+    }
+
+    var location by remember {
+        mutableStateOf("")
+    }
+
+    var notes by remember {
+        mutableStateOf("")
+    }
+
+    var rating by remember {
+        mutableIntStateOf(0)
+    }
+
+
+    // -------------------------------------------------------------
+    // ANDROID PHOTO PICKER
+    // -------------------------------------------------------------
+
+    val picturePickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(5)
+        ) { uris ->
+
+            if (uris.isNotEmpty()) {
+                selectedPictures = uris
+            }
+        }
+
+
+    // -------------------------------------------------------------
+    // MAIN SCREEN
+    // -------------------------------------------------------------
 
     Column(
         modifier = Modifier
@@ -81,7 +150,10 @@ fun EntryScreen(
                 .padding(horizontal = 20.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(
+                modifier = Modifier.height(20.dp)
+            )
+
 
             // ---------------------------------------------------------
             // HEADER
@@ -100,7 +172,11 @@ fun EntryScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
 
             // ---------------------------------------------------------
             // MEDIA OPTIONS
@@ -113,12 +189,20 @@ fun EntryScreen(
                 color = WinxDarkBlue
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+
+                // -----------------------------------------------------
+                // PICTURES
+                // -----------------------------------------------------
 
                 MediaOption(
                     title = "Pictures",
@@ -130,9 +214,21 @@ fun EntryScreen(
                         )
                     },
                     backgroundColor = WinxBlue,
-                    onClick = onPicturesClick,
+                    onClick = {
+
+                        picturePickerLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    },
                     modifier = Modifier.weight(1f)
                 )
+
+
+                // -----------------------------------------------------
+                // VIDEOS
+                // -----------------------------------------------------
 
                 MediaOption(
                     title = "Videos",
@@ -147,6 +243,11 @@ fun EntryScreen(
                     onClick = onVideosClick,
                     modifier = Modifier.weight(1f)
                 )
+
+
+                // -----------------------------------------------------
+                // COUNTRIES
+                // -----------------------------------------------------
 
                 MediaOption(
                     title = "Countries",
@@ -163,67 +264,183 @@ fun EntryScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(22.dp))
+
+            Spacer(
+                modifier = Modifier.height(22.dp)
+            )
+
 
             // ---------------------------------------------------------
-            // UPLOAD AREA
+            // PICTURE UPLOAD / PREVIEW AREA
             // ---------------------------------------------------------
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = WinxDarkBlue
-                )
-            ) {
+            if (selectedPictures.isEmpty()) {
 
-                Column(
+                // -----------------------------------------------------
+                // EMPTY UPLOAD AREA
+                // -----------------------------------------------------
+
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .clickable {
+
+                            picturePickerLauncher.launch(
+                                PickVisualMediaRequest(
+                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                )
+                            )
+                        },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = WinxDarkBlue
+                    )
                 ) {
 
-                    Box(
+                    Column(
                         modifier = Modifier
-                            .size(58.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(WinxBlue),
-                        contentAlignment = Alignment.Center
+                            .fillMaxSize()
+                            .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
 
-                        Icon(
-                            imageVector = Icons.Outlined.Add,
-                            contentDescription = "Upload",
-                            tint = WinxWhite,
-                            modifier = Modifier.size(30.dp)
+                        Box(
+                            modifier = Modifier
+                                .size(58.dp)
+                                .clip(
+                                    RoundedCornerShape(16.dp)
+                                )
+                                .background(WinxBlue),
+                            contentAlignment = Alignment.Center
+                        ) {
+
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = "Upload pictures",
+                                tint = WinxWhite,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+
+
+                        Spacer(
+                            modifier = Modifier.height(10.dp)
+                        )
+
+
+                        Text(
+                            text = "Add photos or videos",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = WinxWhite
+                        )
+
+
+                        Spacer(
+                            modifier = Modifier.height(4.dp)
+                        )
+
+
+                        Text(
+                            text = "Tap here or choose Pictures above",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.8f),
+                            textAlign = TextAlign.Center
                         )
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+            } else {
 
-                    Text(
-                        text = "Add photos or videos",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = WinxWhite
+                // -----------------------------------------------------
+                // SELECTED PICTURES
+                // -----------------------------------------------------
+
+                Column {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = "${selectedPictures.size} picture(s) selected",
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = WinxDarkBlue
+                        )
+
+
+                        TextButton(
+                            onClick = {
+
+                                picturePickerLauncher.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
+                            }
+                        ) {
+
+                            Text(
+                                text = "Add More",
+                                color = WinxBlue
+                            )
+                        }
+                    }
+
+
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
 
-                    Text(
-                        text = "Capture the moments that made this journey special",
-                        fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.8f),
-                        textAlign = TextAlign.Center
-                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+
+                        items(
+                            items = selectedPictures
+                        ) { uri ->
+
+                            val bitmap = remember(uri) {
+
+                                context.contentResolver
+                                    .openInputStream(uri)
+                                    ?.use { inputStream ->
+
+                                        BitmapFactory.decodeStream(
+                                            inputStream
+                                        )
+                                    }
+                            }
+
+
+                            if (bitmap != null) {
+
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = "Selected picture",
+                                    modifier = Modifier
+                                        .size(110.dp)
+                                        .clip(
+                                            RoundedCornerShape(14.dp)
+                                        )
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
+
 
             // ---------------------------------------------------------
             // BASIC DETAILS
@@ -236,11 +453,18 @@ fun EntryScreen(
                 color = WinxDarkBlue
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
 
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+
+            // Entry Title
             OutlinedTextField(
                 value = title,
-                onValueChange = { title = it },
+                onValueChange = {
+                    title = it
+                },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
                     Text("Entry Title")
@@ -252,11 +476,18 @@ fun EntryScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
 
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+
+            // Location
             OutlinedTextField(
                 value = location,
-                onValueChange = { location = it },
+                onValueChange = {
+                    location = it
+                },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
                     Text("Location")
@@ -265,6 +496,7 @@ fun EntryScreen(
                     Text("Where did you go?")
                 },
                 leadingIcon = {
+
                     Icon(
                         imageVector = Icons.Outlined.LocationOn,
                         contentDescription = null
@@ -274,9 +506,16 @@ fun EntryScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
 
-            // Date field
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+
+            // ---------------------------------------------------------
+            // DATE
+            // ---------------------------------------------------------
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -288,7 +527,10 @@ fun EntryScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 15.dp),
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 15.dp
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
@@ -299,14 +541,20 @@ fun EntryScreen(
                         modifier = Modifier.size(22.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Spacer(
+                        modifier = Modifier.width(12.dp)
+                    )
+
 
                     Column {
+
                         Text(
                             text = "Date",
                             fontSize = 12.sp,
                             color = Color.Gray
                         )
+
 
                         Text(
                             text = "19 September 2026",
@@ -318,7 +566,11 @@ fun EntryScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
 
             // ---------------------------------------------------------
             // RATING
@@ -331,7 +583,11 @@ fun EntryScreen(
                 color = WinxDarkBlue
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -350,13 +606,18 @@ fun EntryScreen(
                         modifier = Modifier
                             .size(34.dp)
                             .clickable {
+
                                 rating = star
                             }
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
 
             // ---------------------------------------------------------
             // NOTES
@@ -364,7 +625,9 @@ fun EntryScreen(
 
             OutlinedTextField(
                 value = notes,
-                onValueChange = { notes = it },
+                onValueChange = {
+                    notes = it
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(130.dp),
@@ -378,7 +641,11 @@ fun EntryScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
+
 
             // ---------------------------------------------------------
             // ACTION BUTTONS
@@ -389,6 +656,7 @@ fun EntryScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
 
+                // Cancel
                 TextButton(
                     onClick = onCancelClick,
                     modifier = Modifier.weight(1f)
@@ -401,7 +669,11 @@ fun EntryScreen(
                         modifier = Modifier.size(18.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(5.dp))
+
+                    Spacer(
+                        modifier = Modifier.width(5.dp)
+                    )
+
 
                     Text(
                         text = "Cancel",
@@ -409,6 +681,8 @@ fun EntryScreen(
                     )
                 }
 
+
+                // Save
                 Button(
                     onClick = onSaveClick,
                     modifier = Modifier
@@ -428,8 +702,12 @@ fun EntryScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+
+            Spacer(
+                modifier = Modifier.height(20.dp)
+            )
         }
+
 
         // -------------------------------------------------------------
         // BOTTOM NAVIGATION
@@ -459,7 +737,9 @@ private fun MediaOption(
     Card(
         modifier = modifier
             .height(92.dp)
-            .clickable(onClick = onClick),
+            .clickable(
+                onClick = onClick
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
@@ -477,10 +757,15 @@ private fun MediaOption(
             Box(
                 contentAlignment = Alignment.Center
             ) {
+
                 icon()
             }
 
-            Spacer(modifier = Modifier.height(7.dp))
+
+            Spacer(
+                modifier = Modifier.height(7.dp)
+            )
+
 
             Text(
                 text = title,
@@ -511,6 +796,7 @@ private fun EntryBottomNavigation(
         color = Color(0xFFF0F0F0)
     )
 
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -527,6 +813,7 @@ private fun EntryBottomNavigation(
             selected = true,
             onClick = onEntryClick
         )
+
 
         EntryNavigationItem(
             icon = Icons.Outlined.LocationOn,
@@ -568,7 +855,11 @@ private fun EntryNavigationItem(
                 modifier = Modifier.size(23.dp)
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
+
+            Spacer(
+                modifier = Modifier.height(2.dp)
+            )
+
 
             Text(
                 text = label,
