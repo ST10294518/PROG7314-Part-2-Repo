@@ -2,10 +2,15 @@ package com.winx.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Winx brand colours
+val WinxPink = Color(0xFFF7C6D9)
+val WinxBlue = Color(0xFF12A4D0)
+val WinxDarkBlue = Color(0xFF004067)
+val WinxOrange = Color(0xFFFCA637)
+val WinxPurple = Color(0xFFDE91CF)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Supporting colours
+val WinxWhite = Color(0xFFFFFFFF)
+val WinxBlack = Color(0xFF000000)
+val WinxLightPink = Color(0xFFFFEAF2)
+val WinxGrey = Color(0xFF777777)
