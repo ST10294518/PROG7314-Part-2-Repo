@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import com.winx.app.auth.GoogleAuthManager
 import com.winx.app.screens.CountriesScreen
 import com.winx.app.screens.DashboardScreen
 import com.winx.app.screens.EntriesScreen
@@ -18,12 +20,31 @@ import com.winx.app.screens.LoginScreen
 import com.winx.app.screens.RegisterScreen
 import com.winx.app.screens.TravelEntry
 import com.winx.app.screens.WelcomeScreen
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+
+    // -------------------------------------------------------------
+    // GOOGLE AUTHENTICATION
+    // -------------------------------------------------------------
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val googleAuthManager = remember(context) {
+        GoogleAuthManager(context)
+    }
+
+    var googleSignInLoading by remember {
+        mutableStateOf(false)
+    }
+
+    var googleSignInError by remember {
+        mutableStateOf<String?>(null)
+    }
 
 
     // -------------------------------------------------------------
@@ -91,7 +112,47 @@ fun AppNavigation() {
 
                 onCreateAccountClick = {
                     navController.navigate("register")
-                }
+                },
+
+                onGoogleSignInClick = {
+
+                    if (!googleSignInLoading) {
+
+                        googleSignInLoading = true
+                        googleSignInError = null
+
+                        coroutineScope.launch {
+
+                            val result =
+                                googleAuthManager.signInWithGoogle()
+
+                            result
+                                .onSuccess {
+
+                                    googleSignInLoading = false
+
+                                    navController.navigate("dashboard") {
+
+                                        popUpTo("login") {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                                .onFailure { exception ->
+
+                                    googleSignInLoading = false
+
+                                    googleSignInError =
+                                        exception.message
+                                            ?: "Google sign-in failed."
+                                }
+                        }
+                    }
+                },
+
+                googleSignInLoading = googleSignInLoading,
+
+                googleSignInError = googleSignInError
             )
         }
 
@@ -162,10 +223,8 @@ fun AppNavigation() {
 
                 onEntryClick = { entry ->
 
-                    // Store the entry that the user selected.
                     selectedEntry = entry
 
-                    // Open the details screen.
                     navController.navigate("entryDetails")
                 }
             )
@@ -216,14 +275,10 @@ fun AppNavigation() {
 
                 onSaveClick = { newEntry ->
 
-                    // Add the newly created entry to the list.
                     entries = entries + newEntry
 
-                    // Open My Entries.
                     navController.navigate("entries") {
 
-                        // Remove the Entry screen from
-                        // the navigation back stack.
                         popUpTo("entry") {
                             inclusive = true
                         }

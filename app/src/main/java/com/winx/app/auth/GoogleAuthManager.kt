@@ -11,6 +11,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.winx.app.R
 import kotlinx.coroutines.tasks.await
 
+
 class GoogleAuthManager(
     private val context: Context
 ) {
