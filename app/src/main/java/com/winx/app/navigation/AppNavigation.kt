@@ -9,12 +9,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
-import com.winx.app.screens.LoginScreen
-import com.winx.app.screens.WelcomeScreen
-import com.winx.app.screens.RegisterScreen
-import com.winx.app.screens.DashboardScreen
-import com.winx.app.screens.EntryScreen
 import com.winx.app.screens.CountriesScreen
+import com.winx.app.screens.DashboardScreen
+import com.winx.app.screens.EntriesScreen
+import com.winx.app.screens.EntryScreen
+import com.winx.app.screens.LoginScreen
+import com.winx.app.screens.RegisterScreen
+import com.winx.app.screens.TravelEntry
+import com.winx.app.screens.WelcomeScreen
 
 
 @Composable
@@ -22,12 +24,22 @@ fun AppNavigation() {
 
     val navController = rememberNavController()
 
+
     // -------------------------------------------------------------
     // SELECTED COUNTRY
     // -------------------------------------------------------------
 
     var selectedCountry by remember {
         mutableStateOf("")
+    }
+
+
+    // -------------------------------------------------------------
+    // SAVED ENTRIES
+    // -------------------------------------------------------------
+
+    var entries by remember {
+        mutableStateOf<List<TravelEntry>>(emptyList())
     }
 
 
@@ -40,9 +52,10 @@ fun AppNavigation() {
         startDestination = "welcome"
     ) {
 
-        // ---------------------------------------------------------
+
+        // =========================================================
         // WELCOME SCREEN
-        // ---------------------------------------------------------
+        // =========================================================
 
         composable("welcome") {
 
@@ -54,16 +67,18 @@ fun AppNavigation() {
         }
 
 
-        // ---------------------------------------------------------
+        // =========================================================
         // LOGIN SCREEN
-        // ---------------------------------------------------------
+        // =========================================================
 
         composable("login") {
 
             LoginScreen(
+
                 onLoginClick = {
                     navController.navigate("dashboard")
                 },
+
                 onCreateAccountClick = {
                     navController.navigate("register")
                 }
@@ -71,13 +86,14 @@ fun AppNavigation() {
         }
 
 
-        // ---------------------------------------------------------
+        // =========================================================
         // REGISTER SCREEN
-        // ---------------------------------------------------------
+        // =========================================================
 
         composable("register") {
 
             RegisterScreen(
+
                 onCreateAccountClick = {
                     navController.navigate("dashboard")
                 }
@@ -85,33 +101,62 @@ fun AppNavigation() {
         }
 
 
-        // ---------------------------------------------------------
+        // =========================================================
         // DASHBOARD SCREEN
-        // ---------------------------------------------------------
+        // =========================================================
 
         composable("dashboard") {
 
             DashboardScreen(
 
+                // -------------------------------------------------
+                // ADD ENTRY
+                // -------------------------------------------------
+
                 onAddEntryClick = {
                     navController.navigate("entry")
                 },
+
+
+                // -------------------------------------------------
+                // ADD COUNTRY
+                // -------------------------------------------------
 
                 onAddCountryClick = {
                     navController.navigate("countries")
                 },
 
+
+                // -------------------------------------------------
+                // ENTRIES
+                // -------------------------------------------------
+
                 onEntryClick = {
-                    navController.navigate("entry")
+                    navController.navigate("entries")
                 },
+
+
+                // -------------------------------------------------
+                // CALENDAR
+                // -------------------------------------------------
 
                 onCalendarClick = {
                     // Calendar screen will be connected later
                 },
 
+
+                // -------------------------------------------------
+                // COUNTRIES
+                // -------------------------------------------------
+
                 onCountriesClick = {
                     navController.navigate("countries")
                 },
+
+
+                // -------------------------------------------------
+                // SETTINGS
+                // -------------------------------------------------
 
                 onSettingsClick = {
                     // Settings screen will be connected later
@@ -120,59 +165,132 @@ fun AppNavigation() {
         }
 
 
-        // ---------------------------------------------------------
+        // =========================================================
+        // MY ENTRIES SCREEN
+        // =========================================================
+
+        composable("entries") {
+
+            EntriesScreen(
+
+                // Pass all saved entries to EntriesScreen
+                entries = entries,
+
+                // Add Entry button
+                onAddEntryClick = {
+
+                    navController.navigate("entry")
+                }
+            )
+        }
+
+
+        // =========================================================
         // ENTRY SCREEN
-        // ---------------------------------------------------------
+        // =========================================================
 
         composable("entry") {
 
             EntryScreen(
 
-                // Selected country is passed into EntryScreen
+                // Pass selected country into EntryScreen
                 selectedCountry = selectedCountry,
 
+
+                // -------------------------------------------------
+                // PICTURES
+                // -------------------------------------------------
+
                 onPicturesClick = {
-                    // Picture picker is handled inside EntryScreen
+
+                    // Picture picker is handled
+                    // directly inside EntryScreen
                 },
+
+
+                // -------------------------------------------------
+                // VIDEOS
+                // -------------------------------------------------
 
                 onVideosClick = {
-                    // Video picker is handled inside EntryScreen
+
+                    // Video picker is handled
+                    // directly inside EntryScreen
                 },
 
+
+                // -------------------------------------------------
+                // COUNTRIES
+                // -------------------------------------------------
+
                 onCountriesClick = {
+
                     navController.navigate("countries")
                 },
 
-                onSaveClick = {
-                    navController.popBackStack()
+
+                // -------------------------------------------------
+                // SAVE ENTRY
+                // -------------------------------------------------
+
+                onSaveClick = { newEntry ->
+
+                    // Add the new entry to the saved entries list
+                    entries = entries + newEntry
+
+                    // Open My Entries after saving
+                    navController.navigate("entries") {
+
+                        // Remove the Entry screen from the
+                        // back stack so the saved form isn't
+                        // opened again when pressing Back.
+                        popUpTo("entry") {
+                            inclusive = true
+                        }
+                    }
                 },
 
+
+                // -------------------------------------------------
+                // CANCEL
+                // -------------------------------------------------
+
                 onCancelClick = {
+
                     navController.popBackStack()
                 }
             )
         }
 
 
-        // ---------------------------------------------------------
+        // =========================================================
         // COUNTRIES SCREEN
-        // ---------------------------------------------------------
+        // =========================================================
 
         composable("countries") {
 
             CountriesScreen(
 
-                // Save the selected country
+                // -------------------------------------------------
+                // SAVE COUNTRY
+                // -------------------------------------------------
+
                 onSaveClick = { country ->
 
+                    // Store the selected country
                     selectedCountry = country
 
                     // Return to the previous screen
                     navController.popBackStack()
                 },
 
-                // Cancel and return to previous screen
+
+                // -------------------------------------------------
+                // CANCEL COUNTRY
+                // -------------------------------------------------
+
                 onCancelClick = {
+
                     navController.popBackStack()
                 }
             )

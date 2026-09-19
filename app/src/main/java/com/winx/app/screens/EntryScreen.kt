@@ -81,7 +81,7 @@ fun EntryScreen(
     onPicturesClick: () -> Unit = {},
     onVideosClick: () -> Unit = {},
     onCountriesClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {},
+    onSaveClick: (TravelEntry) -> Unit = {},
     onCancelClick: () -> Unit = {},
 
     // Selected country can be supplied by the Countries screen/navigation.
@@ -906,7 +906,7 @@ fun EntryScreen(
 
             // ---------------------------------------------------------
             // ACTION BUTTONS
-            // ---------------------------------------------------------
+            // -------------------------------------------------------------
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -947,7 +947,22 @@ fun EntryScreen(
                 // -----------------------------------------------------
 
                 Button(
-                    onClick = onSaveClick,
+                    onClick = {
+
+                        // Create a TravelEntry using the information
+                        // entered by the user.
+                        val newEntry = TravelEntry(
+                            title = title,
+                            location = location,
+                            country = selectedCountry,
+                            rating = rating,
+                            notes = notes
+                        )
+
+                        // Send the completed entry back to the
+                        // navigation layer.
+                        onSaveClick(newEntry)
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .height(50.dp),
