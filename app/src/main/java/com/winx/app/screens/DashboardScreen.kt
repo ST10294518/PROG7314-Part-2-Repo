@@ -17,11 +17,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,11 +46,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
+import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxPink
 import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
-import com.winx.app.ui.theme.WinxLightPink
 
 @Composable
 fun DashboardScreen(
@@ -65,7 +77,10 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Top bar
+            // ---------------------------------------------------------
+            // TOP BAR
+            // ---------------------------------------------------------
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -88,12 +103,15 @@ fun DashboardScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(WinxLightDashboard)
+                            .background(WinxLightDashboard),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "🔔",
-                            modifier = Modifier.align(Alignment.Center),
-                            fontSize = 18.sp
+
+                        Icon(
+                            imageVector = Icons.Outlined.NotificationsNone,
+                            contentDescription = "Notifications",
+                            tint = WinxDarkBlue,
+                            modifier = Modifier.size(23.dp)
                         )
                     }
 
@@ -104,14 +122,15 @@ fun DashboardScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(WinxPink)
+                            .background(WinxPink),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "M",
-                            modifier = Modifier.align(Alignment.Center),
-                            color = WinxDarkBlue,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 17.sp
+
+                        Icon(
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = "Profile",
+                            tint = WinxDarkBlue,
+                            modifier = Modifier.size(23.dp)
                         )
                     }
                 }
@@ -119,7 +138,10 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Welcome card
+            // ---------------------------------------------------------
+            // WELCOME CARD
+            // ---------------------------------------------------------
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
@@ -164,6 +186,7 @@ fun DashboardScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
 
+                        // Add Entry
                         Button(
                             onClick = onAddEntryClick,
                             modifier = Modifier.weight(1f),
@@ -172,12 +195,23 @@ fun DashboardScreen(
                                 containerColor = WinxDarkBlue
                             )
                         ) {
+
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = null,
+                                tint = WinxWhite,
+                                modifier = Modifier.size(20.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(6.dp))
+
                             Text(
                                 text = "Add Entry",
                                 color = WinxWhite
                             )
                         }
 
+                        // Add Country
                         Button(
                             onClick = onAddCountryClick,
                             modifier = Modifier.weight(1f),
@@ -186,6 +220,16 @@ fun DashboardScreen(
                                 containerColor = WinxPurple
                             )
                         ) {
+
+                            Icon(
+                                imageVector = Icons.Outlined.Public,
+                                contentDescription = null,
+                                tint = WinxDarkBlue,
+                                modifier = Modifier.size(20.dp)
+                            )
+
+                            Spacer(modifier = Modifier.width(6.dp))
+
                             Text(
                                 text = "Add Country",
                                 color = WinxDarkBlue
@@ -197,7 +241,10 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Calendar section
+            // ---------------------------------------------------------
+            // CALENDAR SECTION
+            // ---------------------------------------------------------
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -214,9 +261,17 @@ fun DashboardScreen(
                 TextButton(
                     onClick = onCalendarClick
                 ) {
+
                     Text(
                         text = "View All",
                         color = WinxBlue
+                    )
+
+                    Icon(
+                        imageVector = Icons.Outlined.ChevronRight,
+                        contentDescription = null,
+                        tint = WinxBlue,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -262,7 +317,10 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Entries section
+            // ---------------------------------------------------------
+            // ENTRIES SECTION
+            // ---------------------------------------------------------
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -279,9 +337,17 @@ fun DashboardScreen(
                 TextButton(
                     onClick = onEntryClick
                 ) {
+
                     Text(
                         text = "View All",
                         color = WinxBlue
+                    )
+
+                    Icon(
+                        imageVector = Icons.Outlined.ChevronRight,
+                        contentDescription = null,
+                        tint = WinxBlue,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -306,13 +372,40 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Recent dishes
-            Text(
-                text = "Recent Dishes",
-                fontSize = 21.sp,
-                fontWeight = FontWeight.Bold,
-                color = WinxDarkBlue
-            )
+            // ---------------------------------------------------------
+            // RECENT DISHES
+            // ---------------------------------------------------------
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "Recent Dishes",
+                    fontSize = 21.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WinxDarkBlue
+                )
+
+                TextButton(
+                    onClick = onEntryClick
+                ) {
+
+                    Text(
+                        text = "View All",
+                        color = WinxBlue
+                    )
+
+                    Icon(
+                        imageVector = Icons.Outlined.ChevronRight,
+                        contentDescription = null,
+                        tint = WinxBlue,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -337,7 +430,10 @@ fun DashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // Bottom navigation
+        // -------------------------------------------------------------
+        // BOTTOM NAVIGATION
+        // -------------------------------------------------------------
+
         BottomNavigationBar(
             onEntryClick = onEntryClick,
             onCalendarClick = onCalendarClick,
@@ -346,6 +442,11 @@ fun DashboardScreen(
         )
     }
 }
+
+
+// =====================================================================
+// CALENDAR DAY
+// =====================================================================
 
 @Composable
 private fun CalendarDay(
@@ -371,7 +472,11 @@ private fun CalendarDay(
                 .size(34.dp)
                 .clip(CircleShape)
                 .background(
-                    if (selected) WinxBlue else Color.Transparent
+                    if (selected) {
+                        WinxBlue
+                    } else {
+                        Color.Transparent
+                    }
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -393,6 +498,11 @@ private fun CalendarDay(
         }
     }
 }
+
+
+// =====================================================================
+// ENTRY CARD
+// =====================================================================
 
 @Composable
 private fun EntryCard(
@@ -423,10 +533,11 @@ private fun EntryCard(
                 contentAlignment = Alignment.Center
             ) {
 
-                Text(
-                    text = "✦",
-                    fontSize = 28.sp,
-                    color = WinxWhite
+                Icon(
+                    imageVector = Icons.Outlined.Description,
+                    contentDescription = "Entry",
+                    tint = WinxWhite,
+                    modifier = Modifier.size(30.dp)
                 )
             }
 
@@ -459,9 +570,21 @@ private fun EntryCard(
                     color = WinxBlue
                 )
             }
+
+            Icon(
+                imageVector = Icons.Outlined.ChevronRight,
+                contentDescription = "Open entry",
+                tint = WinxDarkBlue,
+                modifier = Modifier.size(24.dp)
+            )
         }
     }
 }
+
+
+// =====================================================================
+// DISH CARD
+// =====================================================================
 
 @Composable
 private fun DishCard(
@@ -491,9 +614,11 @@ private fun DishCard(
                 contentAlignment = Alignment.Center
             ) {
 
-                Text(
-                    text = "🍴",
-                    fontSize = 30.sp
+                Icon(
+                    imageVector = Icons.Outlined.Restaurant,
+                    contentDescription = "Dish",
+                    tint = WinxDarkBlue,
+                    modifier = Modifier.size(32.dp)
                 )
             }
 
@@ -514,6 +639,11 @@ private fun DishCard(
         }
     }
 }
+
+
+// =====================================================================
+// BOTTOM NAVIGATION BAR
+// =====================================================================
 
 @Composable
 private fun BottomNavigationBar(
@@ -537,38 +667,43 @@ private fun BottomNavigationBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(68.dp),
+                .height(72.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
+            // Dashboard
             NavigationItem(
-                icon = "⌂",
+                icon = Icons.Outlined.Home,
                 label = "Dashboard",
                 selected = true,
                 onClick = {}
             )
 
+            // Entry
             NavigationItem(
-                icon = "+",
+                icon = Icons.Outlined.Description,
                 label = "Entry",
                 onClick = onEntryClick
             )
 
+            // Calendar
             NavigationItem(
-                icon = "□",
+                icon = Icons.Outlined.CalendarMonth,
                 label = "Calendar",
                 onClick = onCalendarClick
             )
 
+            // Countries
             NavigationItem(
-                icon = "◉",
+                icon = Icons.Outlined.Public,
                 label = "Countries",
                 onClick = onCountriesClick
             )
 
+            // Settings
             NavigationItem(
-                icon = "⚙",
+                icon = Icons.Outlined.Settings,
                 label = "Settings",
                 onClick = onSettingsClick
             )
@@ -576,9 +711,14 @@ private fun BottomNavigationBar(
     }
 }
 
+
+// =====================================================================
+// NAVIGATION ITEM
+// =====================================================================
+
 @Composable
 private fun NavigationItem(
-    icon: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     selected: Boolean = false,
     onClick: () -> Unit
@@ -592,15 +732,18 @@ private fun NavigationItem(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Text(
-                text = icon,
-                fontSize = 20.sp,
-                color = if (selected) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (selected) {
                     WinxBlue
                 } else {
                     WinxGreyDashboard
-                }
+                },
+                modifier = Modifier.size(23.dp)
             )
+
+            Spacer(modifier = Modifier.height(2.dp))
 
             Text(
                 text = label,
@@ -615,8 +758,13 @@ private fun NavigationItem(
     }
 }
 
-// Dashboard-only supporting colours.
-// These keep the existing Winx theme untouched.
+
+// =====================================================================
+// DASHBOARD-ONLY SUPPORTING COLOURS
+// =====================================================================
+
+// Used for the notification circle and divider.
 private val WinxLightDashboard = Color(0xFFF5F5F5)
-private val WinxLightPink = Color(0xFFFFEAF2)
+
+// Used for secondary text.
 private val WinxGreyDashboard = Color(0xFF777777)
