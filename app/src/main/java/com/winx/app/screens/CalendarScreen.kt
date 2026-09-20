@@ -18,16 +18,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.Event
-import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,52 +47,76 @@ import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
 import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
-import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
+
+
+private data class CalendarEntryGroup(
+    val date: String,
+    val entryCount: Int,
+    val visibleEntries: Int,
+    val extraEntries: Int = 0
+)
+
 
 @Composable
 fun CalendarScreen(
     onBackClick: () -> Unit = {}
 ) {
+
     var selectedDay by remember {
-        mutableIntStateOf(16)
+        mutableIntStateOf(17)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(WinxWhite)
-    ) {
+    val entryGroups = remember {
+        listOf(
+            CalendarEntryGroup(
+                date = "Thursday, April 17, 2025",
+                entryCount = 5,
+                visibleEntries = 3,
+                extraEntries = 2
+            ),
+            CalendarEntryGroup(
+                date = "Friday, April 18, 2025",
+                entryCount = 3,
+                visibleEntries = 3
+            ),
+            CalendarEntryGroup(
+                date = "Thursday, March 17, 2025",
+                entryCount = 2,
+                visibleEntries = 2
+            ),
+            CalendarEntryGroup(
+                date = "Thursday, Feb 1, 2025",
+                entryCount = 4,
+                visibleEntries = 3,
+                extraEntries = 1
+            )
+        )
+    }
 
-        // ---------------------------------------------------------
-        // HEADER
-        // ---------------------------------------------------------
+    Scaffold(
+        containerColor = WinxLightPink
+    ) { innerPadding ->
 
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 12.dp,
-                    end = 20.dp,
-                    top = 20.dp,
-                    bottom = 12.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
 
-            IconButton(
-                onClick = onBackClick
+            // ---------------------------------------------------------
+            // HEADER
+            // ---------------------------------------------------------
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 12.dp,
+                        bottom = 10.dp
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.ArrowBack,
-                    contentDescription = "Back",
-                    tint = WinxDarkBlue
-                )
-            }
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            Column {
 
                 Text(
                     text = "Calendar",
@@ -101,243 +126,204 @@ fun CalendarScreen(
                 )
 
                 Text(
-                    text = "Your travel memories at a glance",
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = "Your moments by date",
+                    fontSize = 12.sp,
                     color = CalendarGrey
                 )
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-        ) {
+            // ---------------------------------------------------------
+            // COMPACT CALENDAR
+            // ---------------------------------------------------------
+
+            CompactCalendar(
+                selectedDay = selectedDay,
+                onDaySelected = {
+                    selectedDay = it
+                }
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
             // ---------------------------------------------------------
-            // MONTH CARD
+            // ENTRY LIST
             // ---------------------------------------------------------
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = WinxLightPink
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = 16.dp
+                    )
             ) {
 
-                Column(
-                    modifier = Modifier.padding(18.dp)
-                ) {
+                entryGroups.forEach { group ->
 
-                    // Month controls
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        IconButton(
-                            onClick = {
-                                // Previous month functionality
-                                // will be connected in the next increment.
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.ChevronLeft,
-                                contentDescription = "Previous month",
-                                tint = WinxDarkBlue
-                            )
-                        }
-
-                        Text(
-                            text = "September 2026",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = WinxDarkBlue
-                        )
-
-                        IconButton(
-                            onClick = {
-                                // Next month functionality
-                                // will be connected in the next increment.
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.ChevronRight,
-                                contentDescription = "Next month",
-                                tint = WinxDarkBlue
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Days of week
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        CalendarWeekHeading("M", Modifier.weight(1f))
-                        CalendarWeekHeading("T", Modifier.weight(1f))
-                        CalendarWeekHeading("W", Modifier.weight(1f))
-                        CalendarWeekHeading("T", Modifier.weight(1f))
-                        CalendarWeekHeading("F", Modifier.weight(1f))
-                        CalendarWeekHeading("S", Modifier.weight(1f))
-                        CalendarWeekHeading("S", Modifier.weight(1f))
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // September 2026 starts on a Tuesday.
-                    CalendarWeek(
-                        days = listOf(null, 1, 2, 3, 4, 5, 6),
-                        selectedDay = selectedDay,
-                        onDaySelected = {
-                            selectedDay = it
-                        }
+                    CalendarEntryCard(
+                        group = group
                     )
 
-                    CalendarWeek(
-                        days = listOf(7, 8, 9, 10, 11, 12, 13),
-                        selectedDay = selectedDay,
-                        onDaySelected = {
-                            selectedDay = it
-                        }
-                    )
-
-                    CalendarWeek(
-                        days = listOf(14, 15, 16, 17, 18, 19, 20),
-                        selectedDay = selectedDay,
-                        onDaySelected = {
-                            selectedDay = it
-                        }
-                    )
-
-                    CalendarWeek(
-                        days = listOf(21, 22, 23, 24, 25, 26, 27),
-                        selectedDay = selectedDay,
-                        onDaySelected = {
-                            selectedDay = it
-                        }
-                    )
-
-                    CalendarWeek(
-                        days = listOf(28, 29, 30, null, null, null, null),
-                        selectedDay = selectedDay,
-                        onDaySelected = {
-                            selectedDay = it
-                        }
+                    Spacer(
+                        modifier = Modifier.height(14.dp)
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // ---------------------------------------------------------
-            // SELECTED DATE
-            // ---------------------------------------------------------
-
-            Text(
-                text = "$selectedDay September 2026",
-                fontSize = 21.sp,
-                fontWeight = FontWeight.Bold,
-                color = WinxDarkBlue
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = "Memories for this day",
-                fontSize = 14.sp,
-                color = CalendarGrey
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Example content for the selected prototype date.
-            if (selectedDay == 16) {
-
-                CalendarMemoryCard(
-                    title = "Cape Town",
-                    description = "A beautiful day exploring the city.",
-                    iconBackground = WinxBlue
+                Spacer(
+                    modifier = Modifier.height(80.dp)
                 )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                CalendarMemoryCard(
-                    title = "Travel Memory",
-                    description = "Captured on 16 September 2026.",
-                    iconBackground = WinxPurple
-                )
-
-            } else {
-
-                EmptyCalendarDay()
             }
-
-            Spacer(modifier = Modifier.height(28.dp))
         }
     }
 }
 
 
-// =====================================================================
-// WEEK HEADING
-// =====================================================================
-
 @Composable
-private fun CalendarWeekHeading(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = text,
-        modifier = modifier,
-        textAlign = TextAlign.Center,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
-        color = CalendarGrey
-    )
-}
-
-
-// =====================================================================
-// CALENDAR WEEK
-// =====================================================================
-
-@Composable
-private fun CalendarWeek(
-    days: List<Int?>,
+private fun CompactCalendar(
     selectedDay: Int,
     onDaySelected: (Int) -> Unit
 ) {
-    Row(
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = WinxWhite
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
     ) {
 
-        days.forEach { day ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 8.dp,
+                    vertical = 5.dp
+                )
+        ) {
 
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
+            // Month selector
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(35.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                if (day != null) {
+                IconButton(
+                    onClick = {
+                        // Previous month will be connected
+                        // when backend/calendar logic is added.
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
 
-                    CalendarDate(
+                    Icon(
+                        imageVector =
+                            Icons.Outlined.ChevronLeft,
+                        contentDescription =
+                            "Previous month",
+                        tint = CalendarGrey
+                    )
+                }
+
+                Text(
+                    text = "April 2025",
+                    color = WinxDarkBlue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                IconButton(
+                    onClick = {
+                        // Next month will be connected
+                        // when calendar logic is added.
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+
+                    Icon(
+                        imageVector =
+                            Icons.Outlined.ChevronRight,
+                        contentDescription =
+                            "Next month",
+                        tint = CalendarGrey
+                    )
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.height(3.dp)
+            )
+
+            // Week headings
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                listOf(
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat",
+                    "Sun"
+                ).forEach { heading ->
+
+                    Text(
+                        text = heading,
+                        modifier =
+                            Modifier.weight(1f),
+                        textAlign =
+                            TextAlign.Center,
+                        fontSize = 9.sp,
+                        fontWeight =
+                            FontWeight.SemiBold,
+                        color = CalendarGrey
+                    )
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
+
+            // Prototype week
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment =
+                    Alignment.CenterVertically
+            ) {
+
+                listOf(
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20
+                ).forEach { day ->
+
+                    CompactCalendarDay(
                         day = day,
-                        selected = day == selectedDay,
-                        hasMemory = day == 10 || day == 16,
+                        selected =
+                            day == selectedDay,
+                        hasEntry =
+                            day == 15 ||
+                                    day == 17 ||
+                                    day == 18,
                         onClick = {
                             onDaySelected(day)
-                        }
+                        },
+                        modifier =
+                            Modifier.weight(1f)
                     )
                 }
             }
@@ -346,24 +332,27 @@ private fun CalendarWeek(
 }
 
 
-// =====================================================================
-// CALENDAR DATE
-// =====================================================================
-
 @Composable
-private fun CalendarDate(
+private fun CompactCalendarDay(
     day: Int,
     selected: Boolean,
-    hasMemory: Boolean,
-    onClick: () -> Unit
+    hasEntry: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier
+            .clickable {
+                onClick()
+            },
+        horizontalAlignment =
+            Alignment.CenterHorizontally
     ) {
 
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(28.dp)
                 .clip(CircleShape)
                 .background(
                     if (selected) {
@@ -371,165 +360,300 @@ private fun CalendarDate(
                     } else {
                         Color.Transparent
                     }
-                )
-                .clickable {
-                    onClick()
-                },
-            contentAlignment = Alignment.Center
+                ),
+            contentAlignment =
+                Alignment.Center
         ) {
 
             Text(
                 text = day.toString(),
-                fontSize = 13.sp,
-                fontWeight = if (selected) {
-                    FontWeight.Bold
-                } else {
-                    FontWeight.Normal
-                },
-                color = if (selected) {
-                    WinxWhite
-                } else {
-                    WinxDarkBlue
-                }
+                fontSize = 11.sp,
+                fontWeight =
+                    if (selected) {
+                        FontWeight.Bold
+                    } else {
+                        FontWeight.Normal
+                    },
+                color =
+                    if (selected) {
+                        WinxWhite
+                    } else {
+                        WinxDarkBlue
+                    }
             )
         }
 
-        if (hasMemory) {
-
-            Box(
-                modifier = Modifier
-                    .padding(top = 2.dp)
-                    .size(4.dp)
-                    .clip(CircleShape)
-                    .background(WinxOrange)
-            )
-        }
-    }
-}
-
-
-// =====================================================================
-// MEMORY CARD
-// =====================================================================
-
-@Composable
-private fun CalendarMemoryCard(
-    title: String,
-    description: String,
-    iconBackground: Color
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = iconBackground.copy(alpha = 0.10f)
+        Box(
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .size(3.dp)
+                .clip(CircleShape)
+                .background(
+                    if (hasEntry) {
+                        WinxBlue
+                    } else {
+                        Color.Transparent
+                    }
+                )
         )
-    ) {
-
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(iconBackground),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Icon(
-                    imageVector = Icons.Outlined.Place,
-                    contentDescription = null,
-                    tint = WinxWhite,
-                    modifier = Modifier.size(27.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(14.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-
-                Text(
-                    text = title,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = WinxDarkBlue
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = description,
-                    fontSize = 13.sp,
-                    color = CalendarGrey
-                )
-            }
-
-            Icon(
-                imageVector = Icons.Outlined.ChevronRight,
-                contentDescription = "Open memory",
-                tint = WinxDarkBlue
-            )
-        }
     }
 }
 
 
-// =====================================================================
-// EMPTY DATE
-// =====================================================================
-
 @Composable
-private fun EmptyCalendarDay() {
+private fun CalendarEntryCard(
+    group: CalendarEntryGroup
+) {
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = WinxLightPink
+            containerColor = WinxOrange
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
         )
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(12.dp)
+        ) {
+
+            // ---------------------------------------------------------
+            // DATE + ENTRY COUNT
+            // ---------------------------------------------------------
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment =
+                    Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = group.date,
+                    modifier = Modifier.weight(1f),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WinxDarkBlue
+                )
+
+                Text(
+                    text =
+                        "${group.entryCount} " +
+                                if (group.entryCount == 1) {
+                                    "Entry"
+                                } else {
+                                    "Entries"
+                                },
+                    fontSize = 11.sp,
+                    fontWeight =
+                        FontWeight.SemiBold,
+                    color = WinxDarkBlue
+                )
+
+                Spacer(
+                    modifier = Modifier.width(2.dp)
+                )
+
+                Icon(
+                    imageVector =
+                        Icons.Outlined.ExpandLess,
+                    contentDescription =
+                        "Collapse entries",
+                    modifier = Modifier.size(17.dp),
+                    tint = WinxDarkBlue
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(10.dp)
+            )
+
+            // ---------------------------------------------------------
+            // MEMORY PREVIEWS
+            // ---------------------------------------------------------
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement =
+                    Arrangement.spacedBy(10.dp),
+                verticalAlignment =
+                    Alignment.Top
+            ) {
+
+                repeat(group.visibleEntries) { index ->
+
+                    CalendarMemoryPreview(
+                        isVideo = index == 1,
+                        showDetails = index == 0,
+                        modifier =
+                            Modifier.weight(1f)
+                    )
+                }
+
+                if (group.extraEntries > 0) {
+
+                    MoreEntriesCard(
+                        count = group.extraEntries,
+                        modifier =
+                            Modifier.weight(0.75f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun CalendarMemoryPreview(
+    isVideo: Boolean,
+    showDetails: Boolean,
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = modifier
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(62.dp)
+                .clip(
+                    RoundedCornerShape(7.dp)
+                )
+                .background(
+                    if (isVideo) {
+                        WinxDarkBlue
+                    } else {
+                        WinxWhite
+                    }
+                ),
+            contentAlignment =
+                Alignment.Center
         ) {
 
             Icon(
-                imageVector = Icons.Outlined.Event,
-                contentDescription = null,
-                tint = WinxBlue,
-                modifier = Modifier.size(38.dp)
+                imageVector =
+                    if (isVideo) {
+                        Icons.Filled.PlayArrow
+                    } else {
+                        Icons.Filled.Image
+                    },
+                contentDescription =
+                    if (isVideo) {
+                        "Video entry"
+                    } else {
+                        "Photo entry"
+                    },
+                tint =
+                    if (isVideo) {
+                        WinxWhite
+                    } else {
+                        WinxBlue
+                    },
+                modifier = Modifier.size(25.dp)
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            if (isVideo) {
 
-            Text(
-                text = "No memories for this day",
-                fontWeight = FontWeight.SemiBold,
-                color = WinxDarkBlue
+                Box(
+                    modifier = Modifier
+                        .size(26.dp)
+                        .clip(CircleShape)
+                        .background(
+                            WinxWhite.copy(
+                                alpha = 0.85f
+                            )
+                        ),
+                    contentAlignment =
+                        Alignment.Center
+                ) {
+
+                    Icon(
+                        imageVector =
+                            Icons.Filled.PlayArrow,
+                        contentDescription =
+                            "Play video",
+                        tint = WinxBlue,
+                        modifier =
+                            Modifier.size(17.dp)
+                    )
+                }
+            }
+        }
+
+        if (showDetails) {
+
+            Spacer(
+                modifier = Modifier.height(4.dp)
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "La Trattoria",
+                fontSize = 8.sp,
+                fontWeight = FontWeight.Bold,
+                color = WinxDarkBlue,
+                maxLines = 1
+            )
 
             Text(
-                text = "Your travel memories will appear here.",
-                fontSize = 13.sp,
-                color = CalendarGrey,
-                textAlign = TextAlign.Center
+                text = "Rome, Italy • 1:30pm",
+                fontSize = 7.sp,
+                color = WinxDarkBlue,
+                maxLines = 1
             )
         }
     }
 }
 
 
-// =====================================================================
-// CALENDAR SUPPORTING COLOUR
-// =====================================================================
+@Composable
+private fun MoreEntriesCard(
+    count: Int,
+    modifier: Modifier = Modifier
+) {
 
-private val CalendarGrey = Color(0xFF777777)
+    Box(
+        modifier = modifier
+            .height(62.dp)
+            .clip(
+                RoundedCornerShape(7.dp)
+            )
+            .background(
+                WinxWhite.copy(
+                    alpha = 0.90f
+                )
+            ),
+        contentAlignment =
+            Alignment.Center
+    ) {
+
+        Column(
+            horizontalAlignment =
+                Alignment.CenterHorizontally
+        ) {
+
+            Text(
+                text = "+$count",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = WinxDarkBlue
+            )
+
+            Text(
+                text = "More",
+                fontSize = 9.sp,
+                color = CalendarGrey
+            )
+        }
+    }
+}
+
+
+private val CalendarGrey =
+    Color(0xFF777777)

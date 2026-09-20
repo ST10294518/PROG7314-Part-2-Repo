@@ -11,17 +11,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.winx.app.auth.GoogleAuthManager
+import com.winx.app.screens.CalendarScreen
 import com.winx.app.screens.CountriesScreen
 import com.winx.app.screens.DashboardScreen
 import com.winx.app.screens.EntriesScreen
 import com.winx.app.screens.EntryDetailsScreen
 import com.winx.app.screens.EntryScreen
+import com.winx.app.screens.LibraryScreen
 import com.winx.app.screens.LoginScreen
 import com.winx.app.screens.RegisterScreen
 import com.winx.app.screens.TravelEntry
 import com.winx.app.screens.WelcomeScreen
 import kotlinx.coroutines.launch
-import com.winx.app.screens.CalendarScreen
+
 
 @Composable
 fun AppNavigation() {
@@ -83,7 +85,6 @@ fun AppNavigation() {
         navController = navController,
         startDestination = "welcome"
     ) {
-
 
         // =========================================================
         // WELCOME
@@ -166,13 +167,14 @@ fun AppNavigation() {
 
             RegisterScreen(
                 onCreateAccountClick = {
+
                     navController.navigate("login") {
+
                         popUpTo("register") {
                             inclusive = true
                         }
                     }
-                    }
-
+                }
             )
         }
 
@@ -201,8 +203,8 @@ fun AppNavigation() {
                     navController.navigate("calendar")
                 },
 
-                onCountriesClick = {
-                    navController.navigate("countries")
+                onLibraryClick = {
+                    navController.navigate("library")
                 },
 
                 onSettingsClick = {
@@ -317,9 +319,11 @@ fun AppNavigation() {
                 }
             )
         }
+
+
         // =========================================================
-// CALENDAR
-// =========================================================
+        // CALENDAR
+        // =========================================================
 
         composable("calendar") {
 
@@ -328,6 +332,16 @@ fun AppNavigation() {
                     navController.popBackStack()
                 }
             )
+        }
+
+
+        // =========================================================
+        // LIBRARY
+        // =========================================================
+
+        composable("library") {
+
+            LibraryScreen()
         }
     }
 }
