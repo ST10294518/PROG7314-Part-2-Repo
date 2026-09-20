@@ -1,5 +1,6 @@
 package com.winx.app.screens
 
+import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.winx.app.R
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
@@ -38,6 +43,13 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    val firebaseAuth = remember {
+        FirebaseAuth.getInstance()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,7 +58,6 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // Winx logo
         Image(
             painter = painterResource(id = R.drawable.winx_logo),
             contentDescription = "Winx logo",
@@ -58,85 +69,189 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Tagline
         Text(
             text = "Capture places. Cherish moments.\nRemember every journey.",
-            style = androidx.compose.material3.MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge,
             color = WinxDarkBlue
         )
 
         Spacer(modifier = Modifier.height(28.dp))
 
-        // Page heading
         Text(
             text = "Create your account",
-            style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineMedium,
             color = WinxDarkBlue
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Username
         OutlinedTextField(
             value = username,
-            onValueChange = { username = it },
+            onValueChange = {
+                username = it
+                errorMessage = null
+            },
             modifier = Modifier.fillMaxWidth(),
             label = {
                 Text("Username")
             },
             singleLine = true,
+            enabled = !isLoading,
             shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Email
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                errorMessage = null
+            },
             modifier = Modifier.fillMaxWidth(),
             label = {
                 Text("Email")
             },
             singleLine = true,
+            enabled = !isLoading,
             shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Password
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                errorMessage = null
+            },
             modifier = Modifier.fillMaxWidth(),
             label = {
                 Text("Password")
             },
             singleLine = true,
+            enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Confirm password
         OutlinedTextField(
             value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            onValueChange = {
+                confirmPassword = it
+                errorMessage = null
+            },
             modifier = Modifier.fillMaxWidth(),
             label = {
                 Text("Confirm Password")
             },
             singleLine = true,
+            enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(12.dp)
         )
 
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Create account button
         Button(
-            onClick = onCreateAccountClick,
+            onClick = {
+
+                val cleanUsername = username.trim()
+                val cleanEmail = email.trim()
+
+                when {
+                    cleanUsername.isBlank() -> {
+                        errorMessage = "Please enter a username."
+                    }
+
+                    cleanEmail.isBlank() -> {
+                        errorMessage = "Please enter an email address."
+                    }
+
+                    !Patterns.EMAIL_ADDRESS.matcher(cleanEmail).matches() -> {
+                        errorMessage = "Please enter a valid email address."
+                    }
+
+                    password.isBlank() -> {
+                        errorMessage = "Please enter a password."
+                    }
+
+                    password.length < 6 -> {
+                        errorMessage =
+                            "Password must contain at least 6 characters."
+                    }
+
+                    confirmPassword.isBlank() -> {
+                        errorMessage = "Please confirm your password."
+                    }
+
+                    password != confirmPassword -> {
+                        errorMessage = "Passwords do not match."
+                    }
+
+                    else -> {
+                        isLoading = true
+                        errorMessage = null
+
+                        firebaseAuth
+                            .createUserWithEmailAndPassword(
+                                cleanEmail,
+                                password
+                            )
+                            .addOnCompleteListener { task ->
+
+                                if (task.isSuccessful) {
+
+                                    val firebaseUser =
+                                        firebaseAuth.currentUser
+
+                                    if (firebaseUser != null) {
+
+                                        val profileUpdates =
+                                            UserProfileChangeRequest.Builder()
+                                                .setDisplayName(cleanUsername)
+                                                .build()
+
+                                        firebaseUser
+                                            .updateProfile(profileUpdates)
+                                            .addOnCompleteListener {
+                                                isLoading = false
+
+                                                // Registration succeeded.
+                                                // Only now may the user enter the app.
+                                                onCreateAccountClick()
+                                            }
+
+                                    } else {
+                                        isLoading = false
+                                        errorMessage =
+                                            "Account was created, but the user could not be loaded."
+                                    }
+
+                                } else {
+                                    isLoading = false
+
+                                    errorMessage =
+                                        task.exception?.localizedMessage
+                                            ?: "Account creation failed. Please try again."
+                                }
+                            }
+                    }
+                }
+            },
+            enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
@@ -146,10 +261,19 @@ fun RegisterScreen(
                 contentColor = WinxWhite
             )
         ) {
-            Text(
-                text = "Create Account",
-                style = androidx.compose.material3.MaterialTheme.typography.labelLarge
-            )
+
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.height(24.dp),
+                    strokeWidth = 2.dp,
+                    color = WinxWhite
+                )
+            } else {
+                Text(
+                    text = "Create Account",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
 }

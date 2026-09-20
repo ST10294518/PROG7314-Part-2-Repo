@@ -165,10 +165,14 @@ fun AppNavigation() {
         composable("register") {
 
             RegisterScreen(
-
                 onCreateAccountClick = {
-                    navController.navigate("dashboard")
-                }
+                    navController.navigate("login") {
+                        popUpTo("register") {
+                            inclusive = true
+                        }
+                    }
+                    }
+
             )
         }
 
