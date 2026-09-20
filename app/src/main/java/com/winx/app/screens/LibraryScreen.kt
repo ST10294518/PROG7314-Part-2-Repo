@@ -30,7 +30,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -45,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.winx.app.ui.theme.WinxBlue
@@ -54,6 +52,10 @@ import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxWhite
 
+
+// =====================================================================
+// LIBRARY MODELS
+// =====================================================================
 
 private data class LibraryMemory(
     val title: String,
@@ -77,8 +79,17 @@ private data class CountryMemory(
 )
 
 
+// =====================================================================
+// LIBRARY SCREEN
+// =====================================================================
+
 @Composable
-fun LibraryScreen() {
+fun LibraryScreen(
+    onDashboardClick: () -> Unit = {},
+    onEntryClick: () -> Unit = {},
+    onCalendarClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
+) {
 
     var selectedTab by remember {
         mutableIntStateOf(0)
@@ -94,179 +105,199 @@ fun LibraryScreen() {
             .background(WinxLightPink)
     ) {
 
-        // ---------------------------------------------------------
-        // HEADER
-        // ---------------------------------------------------------
+        // =============================================================
+        // MAIN SCREEN CONTENT
+        // =============================================================
 
-        LibraryHeader()
-
-        // ---------------------------------------------------------
-        // WHITE SEARCH / TAB PANEL
-        // ---------------------------------------------------------
-
-        Card(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = WinxWhite
-            )
+                .weight(1f)
         ) {
 
-            Column(
+            // ---------------------------------------------------------
+            // HEADER
+            // ---------------------------------------------------------
+
+            LibraryHeader()
+
+            // ---------------------------------------------------------
+            // SEARCH / TAB PANEL
+            // ---------------------------------------------------------
+
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WinxWhite
+                )
             ) {
 
-                LibraryTabs(
-                    selectedTab = selectedTab,
-                    onTabSelected = {
-                        selectedTab = it
-                    }
-                )
-
-                Spacer(
-                    modifier = Modifier.height(8.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment =
-                        Alignment.CenterVertically
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
                 ) {
 
-                    OutlinedTextField(
-                        value = searchText,
-                        onValueChange = {
-                            searchText = it
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(48.dp),
-                        placeholder = {
-                            Text(
-                                text =
-                                    if (selectedTab == 0) {
-                                        "Search photos by place, date or notes..."
-                                    } else if (selectedTab == 1) {
-                                        "Search videos by place, date or notes..."
-                                    } else {
-                                        "Search entries by country or place..."
-                                    },
-                                fontSize = 11.sp
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector =
-                                    Icons.Outlined.Search,
-                                contentDescription =
-                                    "Search",
-                                modifier =
-                                    Modifier.size(18.dp)
-                            )
-                        },
-                        singleLine = true,
-                        shape =
-                            RoundedCornerShape(8.dp),
-                        colors =
-                            OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor =
-                                    LibrarySearchGrey,
-                                unfocusedContainerColor =
-                                    LibrarySearchGrey
-                            )
+                    LibraryTabs(
+                        selectedTab = selectedTab,
+                        onTabSelected = {
+                            selectedTab = it
+                        }
                     )
 
                     Spacer(
-                        modifier = Modifier.width(8.dp)
+                        modifier = Modifier.height(8.dp)
                     )
 
-                    Card(
-                        modifier = Modifier
-                            .height(42.dp)
-                            .clickable {
-                                // Filter functionality
-                                // will be connected later.
-                            },
-                        shape =
-                            RoundedCornerShape(8.dp),
-                        colors =
-                            CardDefaults.cardColors(
-                                containerColor =
-                                    LibrarySearchGrey
-                            )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Row(
+                        OutlinedTextField(
+                            value = searchText,
+                            onValueChange = {
+                                searchText = it
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            placeholder = {
+
+                                Text(
+                                    text =
+                                        if (selectedTab == 0) {
+                                            "Search photos by place, date or notes..."
+                                        } else if (selectedTab == 1) {
+                                            "Search videos by place, date or notes..."
+                                        } else {
+                                            "Search entries by country or place..."
+                                        },
+                                    fontSize = 11.sp
+                                )
+                            },
+                            leadingIcon = {
+
+                                Icon(
+                                    imageVector = Icons.Outlined.Search,
+                                    contentDescription = "Search",
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = LibrarySearchGrey,
+                                unfocusedContainerColor = LibrarySearchGrey
+                            )
+                        )
+
+                        Spacer(
+                            modifier = Modifier.width(8.dp)
+                        )
+
+                        Card(
                             modifier = Modifier
                                 .height(42.dp)
-                                .padding(
-                                    horizontal = 12.dp
-                                ),
-                            verticalAlignment =
-                                Alignment.CenterVertically
+                                .clickable {
+                                    // Filter functionality
+                                    // will be connected later.
+                                },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = LibrarySearchGrey
+                            )
                         ) {
 
-                            Icon(
-                                imageVector =
-                                    Icons.Filled.FilterList,
-                                contentDescription =
-                                    "Filter",
-                                modifier =
-                                    Modifier.size(17.dp),
-                                tint = LibraryGrey
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .height(42.dp)
+                                    .padding(horizontal = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
 
-                            Spacer(
-                                modifier =
-                                    Modifier.width(4.dp)
-                            )
+                                Icon(
+                                    imageVector = Icons.Filled.FilterList,
+                                    contentDescription = "Filter",
+                                    modifier = Modifier.size(17.dp),
+                                    tint = LibraryGrey
+                                )
 
-                            Text(
-                                text = "Filter",
-                                fontSize = 11.sp,
-                                color = LibraryGrey
-                            )
+                                Spacer(
+                                    modifier = Modifier.width(4.dp)
+                                )
+
+                                Text(
+                                    text = "Filter",
+                                    fontSize = 11.sp,
+                                    color = LibraryGrey
+                                )
+                            }
                         }
+                    }
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+            // ---------------------------------------------------------
+            // TAB CONTENT
+            // ---------------------------------------------------------
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+
+                when (selectedTab) {
+
+                    0 -> {
+                        PhotoLibraryContent(
+                            searchText = searchText
+                        )
+                    }
+
+                    1 -> {
+                        VideoLibraryContent(
+                            searchText = searchText
+                        )
+                    }
+
+                    2 -> {
+                        EntryLibraryContent(
+                            searchText = searchText
+                        )
                     }
                 }
             }
         }
 
-        Spacer(
-            modifier = Modifier.height(12.dp)
+        // =============================================================
+        // EXISTING WINX BOTTOM NAVIGATION
+        // =============================================================
+
+        BottomNavigationBar(
+            selectedItem = "Library",
+            onDashboardClick = onDashboardClick,
+            onEntryClick = onEntryClick,
+            onCalendarClick = onCalendarClick,
+            onLibraryClick = {
+                // Already on Library.
+            },
+            onSettingsClick = onSettingsClick
         )
-
-        // ---------------------------------------------------------
-        // TAB CONTENT
-        // ---------------------------------------------------------
-
-        when (selectedTab) {
-
-            0 -> {
-                PhotoLibraryContent(
-                    searchText = searchText
-                )
-            }
-
-            1 -> {
-                VideoLibraryContent(
-                    searchText = searchText
-                )
-            }
-
-            2 -> {
-                EntryLibraryContent(
-                    searchText = searchText
-                )
-            }
-        }
     }
 }
 
+
+// =====================================================================
+// LIBRARY HEADER
+// =====================================================================
 
 @Composable
 private fun LibraryHeader() {
@@ -284,8 +315,7 @@ private fun LibraryHeader() {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment =
-                Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Spacer(
@@ -294,8 +324,7 @@ private fun LibraryHeader() {
 
             Column(
                 modifier = Modifier.weight(1f),
-                horizontalAlignment =
-                    Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
@@ -314,16 +343,13 @@ private fun LibraryHeader() {
 
             IconButton(
                 onClick = {
-                    // Notifications will be
-                    // connected later.
+                    // Notifications will be connected later.
                 }
             ) {
 
                 Icon(
-                    imageVector =
-                        Icons.Outlined.Notifications,
-                    contentDescription =
-                        "Notifications",
+                    imageVector = Icons.Outlined.Notifications,
+                    contentDescription = "Notifications",
                     tint = WinxDarkBlue
                 )
             }
@@ -346,6 +372,10 @@ private fun LibraryHeader() {
     }
 }
 
+
+// =====================================================================
+// LIBRARY TABS
+// =====================================================================
 
 @Composable
 private fun LibraryTabs(
@@ -371,13 +401,11 @@ private fun LibraryTabs(
                     .clickable {
                         onTabSelected(index)
                     },
-                horizontalAlignment =
-                    Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Row(
-                    verticalAlignment =
-                        Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     Icon(
@@ -390,9 +418,7 @@ private fun LibraryTabs(
                         contentDescription = null,
                         modifier = Modifier.size(14.dp),
                         tint =
-                            if (
-                                selectedTab == index
-                            ) {
+                            if (selectedTab == index) {
                                 WinxBlue
                             } else {
                                 WinxDarkBlue
@@ -407,17 +433,13 @@ private fun LibraryTabs(
                         text = label,
                         fontSize = 11.sp,
                         fontWeight =
-                            if (
-                                selectedTab == index
-                            ) {
+                            if (selectedTab == index) {
                                 FontWeight.Bold
                             } else {
                                 FontWeight.Normal
                             },
                         color =
-                            if (
-                                selectedTab == index
-                            ) {
+                            if (selectedTab == index) {
                                 WinxBlue
                             } else {
                                 WinxDarkBlue
@@ -434,9 +456,7 @@ private fun LibraryTabs(
                         .height(2.dp)
                         .fillMaxWidth(0.55f)
                         .background(
-                            if (
-                                selectedTab == index
-                            ) {
+                            if (selectedTab == index) {
                                 WinxBlue
                             } else {
                                 Color.Transparent
@@ -449,9 +469,9 @@ private fun LibraryTabs(
 }
 
 
-// ================================================================
+// =====================================================================
 // PHOTO TAB
-// ================================================================
+// =====================================================================
 
 @Composable
 private fun PhotoLibraryContent(
@@ -460,19 +480,23 @@ private fun PhotoLibraryContent(
 
     val groups = remember {
         listOf(
+
             LibraryGroup(
                 date = "June 1, 2025",
                 memories = listOf(
+
                     LibraryMemory(
                         "Locanda Don Serafino",
                         "Ragusa, Italy",
                         "6h"
                     ),
+
                     LibraryMemory(
                         "Fangweng Restaurant",
                         "Yichang, China",
                         "6h"
                     ),
+
                     LibraryMemory(
                         "Enoteca Maria",
                         "New York, USA",
@@ -484,16 +508,19 @@ private fun PhotoLibraryContent(
             LibraryGroup(
                 date = "May 25, 2025",
                 memories = listOf(
+
                     LibraryMemory(
                         "Noksu",
                         "New York, USA",
                         "6:00pm"
                     ),
+
                     LibraryMemory(
                         "Under",
                         "Lindesnes, Norway",
                         "6:30pm"
                     ),
+
                     LibraryMemory(
                         "Iris",
                         "Rosendal, Norway",
@@ -505,16 +532,19 @@ private fun PhotoLibraryContent(
             LibraryGroup(
                 date = "April 17, 2025",
                 memories = listOf(
+
                     LibraryMemory(
                         "La Trattoria",
                         "Rome, Italy",
                         "1:30pm"
                     ),
+
                     LibraryMemory(
                         "Cafe de Flore",
                         "Paris, France",
                         "6:30pm"
                     ),
+
                     LibraryMemory(
                         "Sushi Zen",
                         "Tokyo, Japan",
@@ -527,12 +557,16 @@ private fun PhotoLibraryContent(
 
     val filteredGroups =
         if (searchText.isBlank()) {
+
             groups
+
         } else {
+
             groups.mapNotNull { group ->
 
                 val memories =
                     group.memories.filter {
+
                         it.title.contains(
                             searchText,
                             ignoreCase = true
@@ -565,9 +599,9 @@ private fun PhotoLibraryContent(
 }
 
 
-// ================================================================
+// =====================================================================
 // VIDEO TAB
-// ================================================================
+// =====================================================================
 
 @Composable
 private fun VideoLibraryContent(
@@ -576,19 +610,23 @@ private fun VideoLibraryContent(
 
     val groups = remember {
         listOf(
+
             LibraryGroup(
                 date = "April 17, 2025",
                 memories = listOf(
+
                     LibraryMemory(
                         "Rome Evening",
                         "Rome, Italy",
                         "8:10pm"
                     ),
+
                     LibraryMemory(
                         "Paris Walk",
                         "Paris, France",
                         "5:45pm"
                     ),
+
                     LibraryMemory(
                         "Tokyo Nights",
                         "Tokyo, Japan",
@@ -600,16 +638,19 @@ private fun VideoLibraryContent(
             LibraryGroup(
                 date = "April 15, 2025",
                 memories = listOf(
+
                     LibraryMemory(
                         "Le Jules Verne",
                         "Paris, France",
                         "7:00pm"
                     ),
+
                     LibraryMemory(
                         "Giraffe Manor",
                         "Nairobi, Kenya",
                         "10:30am"
                     ),
+
                     LibraryMemory(
                         "The Grotto",
                         "Krabi, Thailand",
@@ -622,19 +663,23 @@ private fun VideoLibraryContent(
 
     val filtered =
         if (searchText.isBlank()) {
+
             groups
+
         } else {
+
             groups.mapNotNull { group ->
 
                 val memories =
                     group.memories.filter {
+
                         it.title.contains(
                             searchText,
-                            true
+                            ignoreCase = true
                         ) ||
                                 it.location.contains(
                                     searchText,
-                                    true
+                                    ignoreCase = true
                                 )
                     }
 
@@ -656,9 +701,9 @@ private fun VideoLibraryContent(
 }
 
 
-// ================================================================
+// =====================================================================
 // PHOTO / VIDEO GROUP LIST
-// ================================================================
+// =====================================================================
 
 @Composable
 private fun MemoryGroupList(
@@ -679,19 +724,14 @@ private fun MemoryGroupList(
         groups.forEach { group ->
 
             Card(
-                modifier =
-                    Modifier.fillMaxWidth(),
-                shape =
-                    RoundedCornerShape(8.dp),
-                colors =
-                    CardDefaults.cardColors(
-                        containerColor =
-                            WinxOrange
-                    ),
-                elevation =
-                    CardDefaults.cardElevation(
-                        defaultElevation = 3.dp
-                    )
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WinxOrange
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                )
             ) {
 
                 Column(
@@ -701,57 +741,43 @@ private fun MemoryGroupList(
                 ) {
 
                     Row(
-                        modifier =
-                            Modifier.fillMaxWidth(),
-                        verticalAlignment =
-                            Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
 
                         Text(
                             text = group.date,
-                            modifier =
-                                Modifier.weight(1f),
+                            modifier = Modifier.weight(1f),
                             fontSize = 12.sp,
-                            fontWeight =
-                                FontWeight.Bold,
+                            fontWeight = FontWeight.Bold,
                             color = WinxDarkBlue
                         )
 
                         Text(
-                            text =
-                                "${group.memories.size} $typeName ⌃",
+                            text = "${group.memories.size} $typeName ⌃",
                             fontSize = 11.sp,
-                            fontWeight =
-                                FontWeight.SemiBold,
+                            fontWeight = FontWeight.SemiBold,
                             color = WinxDarkBlue
                         )
                     }
 
                     Spacer(
-                        modifier =
-                            Modifier.height(8.dp)
+                        modifier = Modifier.height(8.dp)
                     )
 
-                    group.memories.forEachIndexed {
-                            index,
-                            memory ->
+                    group.memories.forEachIndexed { index, memory ->
 
                         LibraryMemoryRow(
                             memory = memory,
                             isVideo = isVideo
                         )
 
-                        if (
-                            index <
-                            group.memories.lastIndex
-                        ) {
+                        if (index < group.memories.lastIndex) {
 
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(
-                                        start = 62.dp
-                                    )
+                                    .padding(start = 62.dp)
                                     .height(1.dp)
                                     .background(
                                         WinxDarkBlue.copy(
@@ -770,11 +796,15 @@ private fun MemoryGroupList(
         }
 
         Spacer(
-            modifier = Modifier.height(80.dp)
+            modifier = Modifier.height(20.dp)
         )
     }
 }
 
+
+// =====================================================================
+// LIBRARY MEMORY ROW
+// =====================================================================
 
 @Composable
 private fun LibraryMemoryRow(
@@ -786,8 +816,7 @@ private fun LibraryMemoryRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 7.dp),
-        verticalAlignment =
-            Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
         Box(
@@ -806,8 +835,7 @@ private fun LibraryMemoryRow(
                         WinxWhite
                     }
                 ),
-            contentAlignment =
-                Alignment.Center
+            contentAlignment = Alignment.Center
         ) {
 
             Icon(
@@ -860,21 +888,17 @@ private fun LibraryMemoryRow(
             repeat(5) {
 
                 Icon(
-                    imageVector =
-                        Icons.Outlined.Star,
+                    imageVector = Icons.Outlined.Star,
                     contentDescription = null,
-                    modifier =
-                        Modifier.size(11.dp),
+                    modifier = Modifier.size(11.dp),
                     tint = WinxDarkBlue
                 )
             }
         }
 
         Icon(
-            imageVector =
-                Icons.Filled.MoreVert,
-            contentDescription =
-                "More options",
+            imageVector = Icons.Filled.MoreVert,
+            contentDescription = "More options",
             modifier = Modifier.size(17.dp),
             tint = WinxDarkBlue
         )
@@ -882,9 +906,9 @@ private fun LibraryMemoryRow(
 }
 
 
-// ================================================================
+// =====================================================================
 // ENTRIES TAB
-// ================================================================
+// =====================================================================
 
 @Composable
 private fun EntryLibraryContent(
@@ -893,61 +917,58 @@ private fun EntryLibraryContent(
 
     val countries = remember {
         listOf(
+
             CountryMemory(
                 flag = "🇮🇹",
                 country = "Italy",
-                location =
-                    "Rome, Naples, Florence & more",
+                location = "Rome, Naples, Florence & more",
                 venues = 8,
                 photos = 14,
                 videos = 4,
-                dateRange =
-                    "Apr 18 - Apr 21, 2025"
+                dateRange = "Apr 18 - Apr 21, 2025"
             ),
 
             CountryMemory(
                 flag = "🇯🇲",
                 country = "Jamaica",
-                location =
-                    "Negril, Montego Bay & more",
+                location = "Negril, Montego Bay & more",
                 venues = 6,
                 photos = 12,
                 videos = 3,
-                dateRange =
-                    "Apr 10 - Apr 17, 2025"
+                dateRange = "Apr 10 - Apr 17, 2025"
             ),
 
             CountryMemory(
                 flag = "🇯🇵",
                 country = "Japan",
-                location =
-                    "Tokyo, Nagoya, Kyoto & more",
+                location = "Tokyo, Nagoya, Kyoto & more",
                 venues = 10,
                 photos = 18,
                 videos = 5,
-                dateRange =
-                    "Apr 2 - Apr 10, 2025"
+                dateRange = "Apr 2 - Apr 10, 2025"
             ),
 
             CountryMemory(
                 flag = "🇪🇸",
                 country = "Spain",
-                location =
-                    "Rome, Naples, Florence & more",
+                location = "Rome, Naples, Florence & more",
                 venues = 7,
                 photos = 16,
                 videos = 4,
-                dateRange =
-                    "Mar 18 - Apr 1, 2025"
+                dateRange = "Mar 18 - Apr 1, 2025"
             )
         )
     }
 
     val filteredCountries =
         if (searchText.isBlank()) {
+
             countries
+
         } else {
+
             countries.filter {
+
                 it.country.contains(
                     searchText,
                     ignoreCase = true
@@ -968,28 +989,26 @@ private fun EntryLibraryContent(
             .padding(horizontal = 16.dp)
     ) {
 
-        // Summary card
+        // -------------------------------------------------------------
+        // SUMMARY CARD
+        // -------------------------------------------------------------
+
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape =
-                RoundedCornerShape(6.dp),
-            colors =
-                CardDefaults.cardColors(
-                    containerColor =
-                        WinxWhite
-                ),
-            elevation =
-                CardDefaults.cardElevation(
-                    defaultElevation = 2.dp
-                )
+            shape = RoundedCornerShape(6.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = WinxWhite
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 2.dp
+            )
         ) {
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                verticalAlignment =
-                    Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
@@ -998,42 +1017,35 @@ private fun EntryLibraryContent(
                 )
 
                 Spacer(
-                    modifier =
-                        Modifier.width(8.dp)
+                    modifier = Modifier.width(8.dp)
                 )
 
                 Column(
-                    modifier =
-                        Modifier.weight(1f)
+                    modifier = Modifier.weight(1f)
                 ) {
 
                     Text(
-                        text =
-                            "You've visited 8 countries",
+                        text = "You've visited 8 countries",
                         fontSize = 12.sp,
-                        fontWeight =
-                            FontWeight.Bold,
+                        fontWeight = FontWeight.Bold,
                         color = WinxDarkBlue
                     )
 
                     Text(
-                        text =
-                            "Keep exploring and adding more memories",
+                        text = "Keep exploring and adding more memories",
                         fontSize = 9.sp,
                         color = LibraryGrey
                     )
                 }
 
                 Column(
-                    horizontalAlignment =
-                        Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     Text(
                         text = "32",
                         fontSize = 15.sp,
-                        fontWeight =
-                            FontWeight.Bold,
+                        fontWeight = FontWeight.Bold,
                         color = WinxDarkBlue
                     )
 
@@ -1050,19 +1062,19 @@ private fun EntryLibraryContent(
             modifier = Modifier.height(18.dp)
         )
 
+        // -------------------------------------------------------------
+        // COUNTRY ENTRIES
+        // -------------------------------------------------------------
+
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape =
-                RoundedCornerShape(8.dp),
-            colors =
-                CardDefaults.cardColors(
-                    containerColor =
-                        WinxOrange
-                ),
-            elevation =
-                CardDefaults.cardElevation(
-                    defaultElevation = 3.dp
-                )
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = WinxOrange
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 3.dp
+            )
         ) {
 
             Column(
@@ -1071,25 +1083,18 @@ private fun EntryLibraryContent(
                     .padding(10.dp)
             ) {
 
-                filteredCountries.forEachIndexed {
-                        index,
-                        country ->
+                filteredCountries.forEachIndexed { index, country ->
 
                     CountryEntryRow(
                         country = country
                     )
 
-                    if (
-                        index <
-                        filteredCountries.lastIndex
-                    ) {
+                    if (index < filteredCountries.lastIndex) {
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(
-                                    start = 68.dp
-                                )
+                                .padding(start = 68.dp)
                                 .height(1.dp)
                                 .background(
                                     WinxDarkBlue.copy(
@@ -1103,11 +1108,15 @@ private fun EntryLibraryContent(
         }
 
         Spacer(
-            modifier = Modifier.height(80.dp)
+            modifier = Modifier.height(20.dp)
         )
     }
 }
 
+
+// =====================================================================
+// COUNTRY ENTRY ROW
+// =====================================================================
 
 @Composable
 private fun CountryEntryRow(
@@ -1118,8 +1127,7 @@ private fun CountryEntryRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 9.dp),
-        verticalAlignment =
-            Alignment.Top
+        verticalAlignment = Alignment.Top
     ) {
 
         Box(
@@ -1132,18 +1140,14 @@ private fun CountryEntryRow(
                     RoundedCornerShape(8.dp)
                 )
                 .background(WinxWhite),
-            contentAlignment =
-                Alignment.Center
+            contentAlignment = Alignment.Center
         ) {
 
             Icon(
-                imageVector =
-                    Icons.Filled.Image,
-                contentDescription =
-                    "${country.country} memory",
+                imageVector = Icons.Filled.Image,
+                contentDescription = "${country.country} memory",
                 tint = WinxBlue,
-                modifier =
-                    Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp)
             )
         }
 
@@ -1156,8 +1160,7 @@ private fun CountryEntryRow(
         ) {
 
             Row(
-                verticalAlignment =
-                    Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
@@ -1166,15 +1169,13 @@ private fun CountryEntryRow(
                 )
 
                 Spacer(
-                    modifier =
-                        Modifier.width(5.dp)
+                    modifier = Modifier.width(5.dp)
                 )
 
                 Text(
                     text = country.country,
                     fontSize = 13.sp,
-                    fontWeight =
-                        FontWeight.Bold,
+                    fontWeight = FontWeight.Bold,
                     color = WinxDarkBlue
                 )
             }
@@ -1195,32 +1196,21 @@ private fun CountryEntryRow(
 
                     Card(
                         modifier = Modifier
-                            .padding(
-                                end = 4.dp
-                            ),
-                        shape =
-                            RoundedCornerShape(
-                                4.dp
-                            ),
-                        colors =
-                            CardDefaults.cardColors(
-                                containerColor =
-                                    WinxWhite
-                            )
+                            .padding(end = 4.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = WinxWhite
+                        )
                     ) {
 
                         Text(
                             text = "Image",
-                            modifier =
-                                Modifier.padding(
-                                    horizontal =
-                                        5.dp,
-                                    vertical =
-                                        3.dp
-                                ),
+                            modifier = Modifier.padding(
+                                horizontal = 5.dp,
+                                vertical = 3.dp
+                            ),
                             fontSize = 7.sp,
-                            color =
-                                WinxDarkBlue
+                            color = WinxDarkBlue
                         )
                     }
                 }
@@ -1232,45 +1222,43 @@ private fun CountryEntryRow(
         ) {
 
             Text(
-                text =
-                    "▣ ${country.venues} Venues",
+                text = "▣ ${country.venues} Venues",
                 fontSize = 7.sp,
                 color = WinxDarkBlue
             )
 
             Text(
-                text =
-                    "▧ ${country.photos} Photos",
+                text = "▧ ${country.photos} Photos",
                 fontSize = 7.sp,
                 color = WinxDarkBlue
             )
 
             Text(
-                text =
-                    "▶ ${country.videos} Videos",
+                text = "▶ ${country.videos} Videos",
                 fontSize = 7.sp,
                 color = WinxDarkBlue
             )
 
             Text(
-                text =
-                    "▣ ${country.dateRange}",
+                text = "▣ ${country.dateRange}",
                 fontSize = 7.sp,
                 color = WinxDarkBlue
             )
         }
 
         Icon(
-            imageVector =
-                Icons.Outlined.ChevronRight,
-            contentDescription =
-                "Open ${country.country}",
+            imageVector = Icons.Outlined.ChevronRight,
+            contentDescription = "Open ${country.country}",
             modifier = Modifier.size(18.dp),
             tint = WinxDarkBlue
         )
     }
 }
 
+
+// =====================================================================
+// LIBRARY COLOURS
+// =====================================================================
 
 private val LibraryGrey =
     Color(0xFF777777)

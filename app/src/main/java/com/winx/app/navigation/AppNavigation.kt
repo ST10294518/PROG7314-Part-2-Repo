@@ -109,7 +109,13 @@ fun AppNavigation() {
             LoginScreen(
 
                 onLoginClick = {
-                    navController.navigate("dashboard")
+
+                    navController.navigate("dashboard") {
+
+                        popUpTo("login") {
+                            inclusive = true
+                        }
+                    }
                 },
 
                 onCreateAccountClick = {
@@ -166,6 +172,7 @@ fun AppNavigation() {
         composable("register") {
 
             RegisterScreen(
+
                 onCreateAccountClick = {
 
                     navController.navigate("login") {
@@ -200,15 +207,21 @@ fun AppNavigation() {
                 },
 
                 onCalendarClick = {
-                    navController.navigate("calendar")
+
+                    navController.navigate("calendar") {
+                        launchSingleTop = true
+                    }
                 },
 
                 onLibraryClick = {
-                    navController.navigate("library")
+
+                    navController.navigate("library") {
+                        launchSingleTop = true
+                    }
                 },
 
                 onSettingsClick = {
-                    // Settings screen will be connected later
+                    // Settings screen will be connected later.
                 }
             )
         }
@@ -328,8 +341,35 @@ fun AppNavigation() {
         composable("calendar") {
 
             CalendarScreen(
-                onBackClick = {
-                    navController.popBackStack()
+
+                onDashboardClick = {
+
+                    navController.navigate("dashboard") {
+
+                        popUpTo("dashboard") {
+                            inclusive = false
+                        }
+
+                        launchSingleTop = true
+                    }
+                },
+
+                onEntryClick = {
+
+                    navController.navigate("entry") {
+                        launchSingleTop = true
+                    }
+                },
+
+                onLibraryClick = {
+
+                    navController.navigate("library") {
+                        launchSingleTop = true
+                    }
+                },
+
+                onSettingsClick = {
+                    // Settings screen will be connected later.
                 }
             )
         }
@@ -341,7 +381,38 @@ fun AppNavigation() {
 
         composable("library") {
 
-            LibraryScreen()
+            LibraryScreen(
+
+                onDashboardClick = {
+
+                    navController.navigate("dashboard") {
+
+                        popUpTo("dashboard") {
+                            inclusive = false
+                        }
+
+                        launchSingleTop = true
+                    }
+                },
+
+                onEntryClick = {
+
+                    navController.navigate("entry") {
+                        launchSingleTop = true
+                    }
+                },
+
+                onCalendarClick = {
+
+                    navController.navigate("calendar") {
+                        launchSingleTop = true
+                    }
+                },
+
+                onSettingsClick = {
+                    // Settings screen will be connected later.
+                }
+            )
         }
     }
 }

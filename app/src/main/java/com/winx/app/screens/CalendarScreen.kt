@@ -60,7 +60,10 @@ private data class CalendarEntryGroup(
 
 @Composable
 fun CalendarScreen(
-    onBackClick: () -> Unit = {}
+    onDashboardClick: () -> Unit = {},
+    onEntryClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
 
     var selectedDay by remember {
@@ -95,7 +98,17 @@ fun CalendarScreen(
     }
 
     Scaffold(
-        containerColor = WinxLightPink
+        containerColor = WinxLightPink,
+        bottomBar = {
+            BottomNavigationBar(
+                selectedItem = "Calendar",
+                onDashboardClick = onDashboardClick,
+                onEntryClick = onEntryClick,
+                onCalendarClick = {},
+                onLibraryClick = onLibraryClick,
+                onSettingsClick = onSettingsClick
+            )
+        }
     ) { innerPadding ->
 
         Column(

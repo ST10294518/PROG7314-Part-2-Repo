@@ -673,11 +673,13 @@ private fun DishCard(
 // =====================================================================
 
 @Composable
-private fun BottomNavigationBar(
-    onEntryClick: () -> Unit,
-    onCalendarClick: () -> Unit,
-    onLibraryClick: () -> Unit,
-    onSettingsClick: () -> Unit
+fun BottomNavigationBar(
+    selectedItem: String = "Dashboard",
+    onDashboardClick: () -> Unit = {},
+    onEntryClick: () -> Unit = {},
+    onCalendarClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
 
     Column(
@@ -702,31 +704,35 @@ private fun BottomNavigationBar(
             NavigationItem(
                 icon = Icons.Outlined.Home,
                 label = "Dashboard",
-                selected = true,
-                onClick = {}
+                selected = selectedItem == "Dashboard",
+                onClick = onDashboardClick
             )
 
             NavigationItem(
                 icon = Icons.Outlined.Description,
                 label = "Entry",
+                selected = selectedItem == "Entry",
                 onClick = onEntryClick
             )
 
             NavigationItem(
                 icon = Icons.Outlined.CalendarMonth,
                 label = "Calendar",
+                selected = selectedItem == "Calendar",
                 onClick = onCalendarClick
             )
 
             NavigationItem(
                 icon = Icons.Outlined.Folder,
                 label = "Library",
+                selected = selectedItem == "Library",
                 onClick = onLibraryClick
             )
 
             NavigationItem(
                 icon = Icons.Outlined.Settings,
                 label = "Settings",
+                selected = selectedItem == "Settings",
                 onClick = onSettingsClick
             )
         }
