@@ -87,6 +87,7 @@ private data class CountryMemory(
 fun LibraryScreen(
     onDashboardClick: () -> Unit = {},
     onEntryClick: (TravelEntry) -> Unit = {},
+    onEntriesNavigationClick: () -> Unit = {},
     onCalendarClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
@@ -333,7 +334,7 @@ fun LibraryScreen(
         BottomNavigationBar(
             selectedItem = "Library",
             onDashboardClick = onDashboardClick,
-            onEntryClick = { } ,
+            onEntryClick = onEntriesNavigationClick,
             onCalendarClick = onCalendarClick,
             onLibraryClick = {
                 // Already on Library.
@@ -1237,35 +1238,95 @@ private fun EntryLibraryContent(
                 ) {
 
                     countries.forEachIndexed { index, country ->
+                groupedEntries.forEach { (countryName, countryEntries) ->
 
-                        CountryEntryRow(
-                            country = country,
-                            onClick = {
-                                groupedEntries[country.country]?.firstOrNull()?.let { entry ->
-                                    onEntryClick(entry)
-                                }
-                            }
+                    // Country summary
+                    CountryEntryRow(
+                        country = CountryMemory(
+                            flag = getCountryFlag(countryName),
+                            country = countryName,
+                            location = countryEntries
+                                .joinToString(", ") { it.location }
+                                .take(55),
+                            venues = countryEntries.size,
+                            photos = 0,
+                            videos = 0,
+                            dateRange = "Saved entries"
                         )
+                    )
 
-                        if (index < countries.lastIndex) {
+                    Spacer(
+                        modifier = Modifier.height(6.dp)
+                    )
 
-                            Box(
+                    // Individual API entries
+                    countryEntries.forEach { entry ->
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = 4.dp,
+                                    vertical = 4.dp
+                                )
+                                .clickable {
+                                    onEntryClick(entry)
+                                },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = WinxWhite
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 2.dp
+                            )
+                        ) {
+
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 68.dp)
-                                    .height(1.dp)
-                                    .background(
-                                        WinxDarkBlue.copy(
-                                            alpha = 0.15f
-                                        )
-                                    )
-                            )
+                                    .padding(12.dp)
+                            ) {
+
+                                Text(
+                                    text = entry.title,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = WinxDarkBlue
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.height(4.dp)
+                                )
+
+                                Text(
+                                    text = entry.location,
+                                    fontSize = 11.sp,
+                                    color = LibraryGrey
+                                )
+
+                                Text(
+                                    text = "${entry.rating}/5 stars",
+                                    fontSize = 10.sp,
+                                    color = WinxDarkBlue
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.height(3.dp)
+                                )
+
+                                Text(
+                                    text = "Tap to view entry details",
+                                    fontSize = 9.sp,
+                                    color = LibraryGrey
+                                )
+                            }
                         }
                     }
-                }
-            }
-        }
 
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+                }
         Spacer(
             modifier = Modifier.height(20.dp)
         )
@@ -1278,15 +1339,13 @@ private fun EntryLibraryContent(
 
 @Composable
 private fun CountryEntryRow(
-    country: CountryMemory,
-    onClick: () -> Unit = {}
+    country: CountryMemory
 ) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 9.dp)
-            .clickable { onClick() },
+            .padding(vertical = 9.dp),
         verticalAlignment = Alignment.Top
     ) {
 
@@ -1468,8 +1527,6 @@ private val LibraryGrey =
 
 private val LibrarySearchGrey =
     Color(0xFFF1F1F1)
-
-
 
 
 

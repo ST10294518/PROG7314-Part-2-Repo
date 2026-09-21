@@ -739,12 +739,8 @@ fun AppNavigation() {
                 },
 
                 onEntryClick = {
-
                     loadEntries()
-
-                    navController.navigate("entry") {
-                        launchSingleTop = true
-                    }
+                    navController.navigate("entries")
                 },
 
                 onCalendarClick = {
@@ -898,3 +894,6 @@ fun AppNavigation() {
         )
     }
 }
+
+
+

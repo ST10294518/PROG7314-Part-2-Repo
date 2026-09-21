@@ -86,7 +86,7 @@ private data class CountryMemory(
 @Composable
 fun LibraryScreen(
     onDashboardClick: () -> Unit = {},
-    onEntryClick: (TravelEntry) -> Unit = {},
+    onEntryClick: () -> Unit = {},
     onCalendarClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
@@ -318,8 +318,7 @@ fun LibraryScreen(
                         EntryLibraryContent(
                             entries = apiEntries,
                             searchText = searchText,
-                            apiError = apiError,
-                            onEntryClick = onEntryClick
+                            apiError = apiError
                         )
                     }
                 }
@@ -333,7 +332,7 @@ fun LibraryScreen(
         BottomNavigationBar(
             selectedItem = "Library",
             onDashboardClick = onDashboardClick,
-            onEntryClick = { } ,
+            onEntryClick = onEntryClick,
             onCalendarClick = onCalendarClick,
             onLibraryClick = {
                 // Already on Library.
@@ -958,8 +957,7 @@ private fun LibraryMemoryRow(
 private fun EntryLibraryContent(
     entries: List<TravelEntry>,
     searchText: String,
-    apiError: String?,
-    onEntryClick: (TravelEntry) -> Unit
+    apiError: String?
 ) {
 
     // -------------------------------------------------------------
@@ -1239,12 +1237,7 @@ private fun EntryLibraryContent(
                     countries.forEachIndexed { index, country ->
 
                         CountryEntryRow(
-                            country = country,
-                            onClick = {
-                                groupedEntries[country.country]?.firstOrNull()?.let { entry ->
-                                    onEntryClick(entry)
-                                }
-                            }
+                            country = country
                         )
 
                         if (index < countries.lastIndex) {
@@ -1278,15 +1271,13 @@ private fun EntryLibraryContent(
 
 @Composable
 private fun CountryEntryRow(
-    country: CountryMemory,
-    onClick: () -> Unit = {}
+    country: CountryMemory
 ) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 9.dp)
-            .clickable { onClick() },
+            .padding(vertical = 9.dp),
         verticalAlignment = Alignment.Top
     ) {
 
@@ -1468,9 +1459,3 @@ private val LibraryGrey =
 
 private val LibrarySearchGrey =
     Color(0xFFF1F1F1)
-
-
-
-
-
-

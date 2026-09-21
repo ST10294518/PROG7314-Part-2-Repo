@@ -15,5 +15,8 @@ namespace Winx.API.Models
         public int Rating { get; set; }
 
         public string Notes { get; set; } = string.Empty;
+
+        public ICollection<MediaItem> MediaItems { get; set; }
+            = new List<MediaItem>();
     }
 }
