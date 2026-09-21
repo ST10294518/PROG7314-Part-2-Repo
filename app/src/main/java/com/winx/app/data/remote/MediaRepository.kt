@@ -97,4 +97,33 @@ class MediaRepository {
             Result.failure(exception)
         }
     }
+    /**
+     * Loads media belonging to all supplied travel-entry IDs.
+     * This keeps LibraryScreen free from hard-coded photo/video data.
+     */
+    suspend fun getMediaForEntries(travelEntryIds: List<Int>): Result<List<MediaItemDto>> {
+        return try {
+            val validIds = travelEntryIds.filter { it > 0 }.distinct()
+            val allMedia = mutableListOf<MediaItemDto>()
+
+            for (entryId in validIds) {
+                allMedia += api.getMediaForEntry(entryId)
+            }
+
+            Log.d(
+                "MediaRepository",
+                "Loaded ${allMedia.size} media item(s) for ${validIds.size} entries"
+            )
+
+            Result.success(allMedia)
+        } catch (exception: Exception) {
+            Log.e(
+                "MediaRepository",
+                "Failed to load Library media",
+                exception
+            )
+            Result.failure(exception)
+        }
+    }
+
 }

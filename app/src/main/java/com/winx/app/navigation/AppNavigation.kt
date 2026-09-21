@@ -738,9 +738,16 @@ fun AppNavigation() {
                     }
                 },
 
-                onEntryClick = {
+                onEntriesClick = {
                     loadEntries()
-                    navController.navigate("entries")
+                    navController.navigate("entries") {
+                        launchSingleTop = true
+                    }
+                },
+
+                onEntryDetailsClick = { entry ->
+                    selectedEntry = entry
+                    navController.navigate("entryDetails")
                 },
 
                 onCalendarClick = {
