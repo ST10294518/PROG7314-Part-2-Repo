@@ -20,6 +20,7 @@ import com.winx.app.screens.EntryScreen
 import com.winx.app.screens.LibraryScreen
 import com.winx.app.screens.LoginScreen
 import com.winx.app.screens.RegisterScreen
+import com.winx.app.screens.TravelEntry
 import com.winx.app.screens.WelcomeScreen
 import kotlinx.coroutines.launch
 
