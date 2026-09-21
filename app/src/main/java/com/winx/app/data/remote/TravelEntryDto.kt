@@ -1,6 +1,6 @@
-package com.winx.app.screens
+package com.winx.app.data.remote
 
-data class TravelEntry(
+data class TravelEntryDto(
     val id: Int = 0,
     val title: String,
     val location: String,

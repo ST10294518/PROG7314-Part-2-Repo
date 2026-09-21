@@ -7,44 +7,46 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarToday
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Star
-
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
 import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
+import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
-
 
 @Composable
 fun EntryDetailsScreen(
     entry: TravelEntry,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
 
     Column(
@@ -53,9 +55,9 @@ fun EntryDetailsScreen(
             .background(WinxWhite)
     ) {
 
-        // ---------------------------------------------------------
+        // =============================================================
         // HEADER
-        // ---------------------------------------------------------
+        // =============================================================
 
         Row(
             modifier = Modifier
@@ -87,20 +89,15 @@ fun EntryDetailsScreen(
             )
         }
 
-
-        // ---------------------------------------------------------
-        // ENTRY CONTENT
-        // ---------------------------------------------------------
+        // =============================================================
+        // CONTENT
+        // =============================================================
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
-
-            // -----------------------------------------------------
-            // TITLE
-            // -----------------------------------------------------
 
             Text(
                 text = entry.title.ifBlank {
@@ -111,15 +108,9 @@ fun EntryDetailsScreen(
                 fontWeight = FontWeight.Bold
             )
 
-
             Spacer(
                 modifier = Modifier.height(8.dp)
             )
-
-
-            // -----------------------------------------------------
-            // LOCATION
-            // -----------------------------------------------------
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -160,15 +151,13 @@ fun EntryDetailsScreen(
                 )
             }
 
-
             Spacer(
                 modifier = Modifier.height(20.dp)
             )
 
-
-            // -----------------------------------------------------
+            // =========================================================
             // COUNTRY
-            // -----------------------------------------------------
+            // =========================================================
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -220,15 +209,13 @@ fun EntryDetailsScreen(
                 }
             }
 
-
             Spacer(
                 modifier = Modifier.height(14.dp)
             )
 
-
-            // -----------------------------------------------------
+            // =========================================================
             // DATE
-            // -----------------------------------------------------
+            // =========================================================
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -278,15 +265,13 @@ fun EntryDetailsScreen(
                 }
             }
 
-
             Spacer(
                 modifier = Modifier.height(18.dp)
             )
 
-
-            // -----------------------------------------------------
+            // =========================================================
             // RATING
-            // -----------------------------------------------------
+            // =========================================================
 
             Text(
                 text = "Your Rating",
@@ -295,11 +280,9 @@ fun EntryDetailsScreen(
                 color = WinxDarkBlue
             )
 
-
             Spacer(
                 modifier = Modifier.height(8.dp)
             )
-
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -320,15 +303,13 @@ fun EntryDetailsScreen(
                 }
             }
 
-
             Spacer(
                 modifier = Modifier.height(20.dp)
             )
 
-
-            // -----------------------------------------------------
+            // =========================================================
             // NOTES
-            // -----------------------------------------------------
+            // =========================================================
 
             Text(
                 text = "Notes",
@@ -337,11 +318,9 @@ fun EntryDetailsScreen(
                 color = WinxDarkBlue
             )
 
-
             Spacer(
                 modifier = Modifier.height(8.dp)
             )
-
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -358,6 +337,72 @@ fun EntryDetailsScreen(
                     modifier = Modifier.padding(16.dp),
                     fontSize = 15.sp,
                     color = WinxDarkBlue
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
+
+            // =========================================================
+            // EDIT BUTTON
+            // =========================================================
+
+            Button(
+                onClick = onEditClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = WinxPurple
+                )
+            ) {
+
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = null,
+                    tint = WinxDarkBlue
+                )
+
+                Spacer(
+                    modifier = Modifier.width(8.dp)
+                )
+
+                Text(
+                    text = "Edit Entry",
+                    color = WinxDarkBlue,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            // =========================================================
+            // DELETE BUTTON
+            // =========================================================
+
+            TextButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = null,
+                    tint = Color.Red
+                )
+
+                Spacer(
+                    modifier = Modifier.width(6.dp)
+                )
+
+                Text(
+                    text = "Delete Entry",
+                    color = Color.Red,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }

@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +47,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.winx.app.data.remote.TravelEntryRepository
 import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
 import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxWhite
-
 
 // =====================================================================
 // LIBRARY MODELS
@@ -78,7 +79,6 @@ private data class CountryMemory(
     val dateRange: String
 )
 
-
 // =====================================================================
 // LIBRARY SCREEN
 // =====================================================================
@@ -97,6 +97,41 @@ fun LibraryScreen(
 
     var searchText by remember {
         mutableStateOf("")
+    }
+
+    // -------------------------------------------------------------
+    // REST API STATE
+    // -------------------------------------------------------------
+
+    var apiEntries by remember {
+        mutableStateOf<List<TravelEntry>>(emptyList())
+    }
+
+    var apiError by remember {
+        mutableStateOf<String?>(null)
+    }
+
+    val repository = remember {
+        TravelEntryRepository()
+    }
+
+    // -------------------------------------------------------------
+    // LOAD ENTRIES FROM REST API
+    // -------------------------------------------------------------
+
+    LaunchedEffect(Unit) {
+
+        val result = repository.getEntries()
+
+        result
+            .onSuccess { entries ->
+                apiEntries = entries
+                apiError = null
+            }
+            .onFailure { error ->
+                apiError = error.message
+                    ?: "Unable to connect to the Winx REST API."
+            }
     }
 
     Column(
@@ -202,8 +237,7 @@ fun LibraryScreen(
                             modifier = Modifier
                                 .height(42.dp)
                                 .clickable {
-                                    // Filter functionality
-                                    // will be connected later.
+                                    // Filter functionality can be added later.
                                 },
                             shape = RoundedCornerShape(8.dp),
                             colors = CardDefaults.cardColors(
@@ -256,11 +290,19 @@ fun LibraryScreen(
 
                 when (selectedTab) {
 
+                    // =================================================
+                    // PHOTOS
+                    // =================================================
+
                     0 -> {
                         PhotoLibraryContent(
                             searchText = searchText
                         )
                     }
+
+                    // =================================================
+                    // VIDEOS
+                    // =================================================
 
                     1 -> {
                         VideoLibraryContent(
@@ -268,9 +310,15 @@ fun LibraryScreen(
                         )
                     }
 
+                    // =================================================
+                    // ENTRIES - REST API
+                    // =================================================
+
                     2 -> {
                         EntryLibraryContent(
-                            searchText = searchText
+                            entries = apiEntries,
+                            searchText = searchText,
+                            apiError = apiError
                         )
                     }
                 }
@@ -278,7 +326,7 @@ fun LibraryScreen(
         }
 
         // =============================================================
-        // EXISTING WINX BOTTOM NAVIGATION
+        // BOTTOM NAVIGATION
         // =============================================================
 
         BottomNavigationBar(
@@ -293,7 +341,6 @@ fun LibraryScreen(
         )
     }
 }
-
 
 // =====================================================================
 // LIBRARY HEADER
@@ -371,7 +418,6 @@ private fun LibraryHeader() {
         )
     }
 }
-
 
 // =====================================================================
 // LIBRARY TABS
@@ -468,7 +514,6 @@ private fun LibraryTabs(
     }
 }
 
-
 // =====================================================================
 // PHOTO TAB
 // =====================================================================
@@ -479,6 +524,7 @@ private fun PhotoLibraryContent(
 ) {
 
     val groups = remember {
+
         listOf(
 
             LibraryGroup(
@@ -598,7 +644,6 @@ private fun PhotoLibraryContent(
     )
 }
 
-
 // =====================================================================
 // VIDEO TAB
 // =====================================================================
@@ -609,6 +654,7 @@ private fun VideoLibraryContent(
 ) {
 
     val groups = remember {
+
         listOf(
 
             LibraryGroup(
@@ -699,7 +745,6 @@ private fun VideoLibraryContent(
         isVideo = true
     )
 }
-
 
 // =====================================================================
 // PHOTO / VIDEO GROUP LIST
@@ -800,7 +845,6 @@ private fun MemoryGroupList(
         )
     }
 }
-
 
 // =====================================================================
 // LIBRARY MEMORY ROW
@@ -905,80 +949,69 @@ private fun LibraryMemoryRow(
     }
 }
 
-
 // =====================================================================
-// ENTRIES TAB
+// ENTRIES TAB - REST API DATA
 // =====================================================================
 
 @Composable
 private fun EntryLibraryContent(
-    searchText: String
+    entries: List<TravelEntry>,
+    searchText: String,
+    apiError: String?
 ) {
 
-    val countries = remember {
-        listOf(
+    // -------------------------------------------------------------
+    // FILTER API ENTRIES
+    // -------------------------------------------------------------
 
-            CountryMemory(
-                flag = "🇮🇹",
-                country = "Italy",
-                location = "Rome, Naples, Florence & more",
-                venues = 8,
-                photos = 14,
-                videos = 4,
-                dateRange = "Apr 18 - Apr 21, 2025"
-            ),
+    val filteredEntries = entries.filter { entry ->
 
-            CountryMemory(
-                flag = "🇯🇲",
-                country = "Jamaica",
-                location = "Negril, Montego Bay & more",
-                venues = 6,
-                photos = 12,
-                videos = 3,
-                dateRange = "Apr 10 - Apr 17, 2025"
-            ),
-
-            CountryMemory(
-                flag = "🇯🇵",
-                country = "Japan",
-                location = "Tokyo, Nagoya, Kyoto & more",
-                venues = 10,
-                photos = 18,
-                videos = 5,
-                dateRange = "Apr 2 - Apr 10, 2025"
-            ),
-
-            CountryMemory(
-                flag = "🇪🇸",
-                country = "Spain",
-                location = "Rome, Naples, Florence & more",
-                venues = 7,
-                photos = 16,
-                videos = 4,
-                dateRange = "Mar 18 - Apr 1, 2025"
-            )
-        )
-    }
-
-    val filteredCountries =
-        if (searchText.isBlank()) {
-
-            countries
-
-        } else {
-
-            countries.filter {
-
-                it.country.contains(
+        searchText.isBlank() ||
+                entry.country.contains(
                     searchText,
                     ignoreCase = true
                 ) ||
-                        it.location.contains(
-                            searchText,
-                            ignoreCase = true
-                        )
-            }
+                entry.location.contains(
+                    searchText,
+                    ignoreCase = true
+                ) ||
+                entry.title.contains(
+                    searchText,
+                    ignoreCase = true
+                ) ||
+                entry.notes.contains(
+                    searchText,
+                    ignoreCase = true
+                )
+    }
+
+    // -------------------------------------------------------------
+    // GROUP ENTRIES BY COUNTRY
+    // -------------------------------------------------------------
+
+    val groupedEntries = filteredEntries.groupBy { entry ->
+
+        entry.country.ifBlank {
+            "Unknown Country"
         }
+    }
+
+    val countries = groupedEntries.map { (countryName, countryEntries) ->
+
+        CountryMemory(
+            flag = getCountryFlag(countryName),
+            country = countryName,
+            location = countryEntries
+                .joinToString(", ") {
+                    it.location
+                }
+                .take(55),
+            venues = countryEntries.size,
+            photos = 0,
+            videos = 0,
+            dateRange = "Saved entries"
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -1025,7 +1058,7 @@ private fun EntryLibraryContent(
                 ) {
 
                     Text(
-                        text = "You've visited 8 countries",
+                        text = "You've visited ${countries.size} countries",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = WinxDarkBlue
@@ -1043,7 +1076,7 @@ private fun EntryLibraryContent(
                 ) {
 
                     Text(
-                        text = "32",
+                        text = "${entries.size}",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = WinxDarkBlue
@@ -1063,45 +1096,164 @@ private fun EntryLibraryContent(
         )
 
         // -------------------------------------------------------------
-        // COUNTRY ENTRIES
+        // API ERROR
         // -------------------------------------------------------------
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = WinxOrange
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 3.dp
-            )
-        ) {
+        if (apiError != null) {
 
-            Column(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)
+                    .padding(bottom = 12.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WinxWhite
+                )
             ) {
 
-                filteredCountries.forEachIndexed { index, country ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
 
-                    CountryEntryRow(
-                        country = country
+                    Text(
+                        text = "Unable to load entries",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WinxDarkBlue
                     )
 
-                    if (index < filteredCountries.lastIndex) {
+                    Spacer(
+                        modifier = Modifier.height(5.dp)
+                    )
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 68.dp)
-                                .height(1.dp)
-                                .background(
-                                    WinxDarkBlue.copy(
-                                        alpha = 0.15f
-                                    )
-                                )
+                    Text(
+                        text = apiError,
+                        fontSize = 10.sp,
+                        color = LibraryGrey
+                    )
+
+                    Spacer(
+                        modifier = Modifier.height(5.dp)
+                    )
+
+                    Text(
+                        text = "Make sure Winx.API is running on port 5001.",
+                        fontSize = 9.sp,
+                        color = LibraryGrey
+                    )
+                }
+            }
+        }
+
+        // -------------------------------------------------------------
+        // NO ENTRIES
+        // -------------------------------------------------------------
+
+        if (countries.isEmpty() && apiError == null) {
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WinxWhite
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 2.dp
+                )
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Filled.Image,
+                        contentDescription = null,
+                        tint = WinxBlue,
+                        modifier = Modifier.size(40.dp)
+                    )
+
+                    Spacer(
+                        modifier = Modifier.height(10.dp)
+                    )
+
+                    Text(
+                        text =
+                            if (entries.isEmpty()) {
+                                "No saved entries yet"
+                            } else {
+                                "No entries found"
+                            },
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = WinxDarkBlue
+                    )
+
+                    Spacer(
+                        modifier = Modifier.height(4.dp)
+                    )
+
+                    Text(
+                        text =
+                            if (entries.isEmpty()) {
+                                "Create your first restaurant memory to see it here."
+                            } else {
+                                "Try a different search."
+                            },
+                        fontSize = 10.sp,
+                        color = LibraryGrey
+                    )
+                }
+            }
+
+        } else if (countries.isNotEmpty()) {
+
+            // ---------------------------------------------------------
+            // COUNTRY ENTRIES
+            // ---------------------------------------------------------
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = WinxOrange
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 3.dp
+                )
+            ) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+
+                    countries.forEachIndexed { index, country ->
+
+                        CountryEntryRow(
+                            country = country
                         )
+
+                        if (index < countries.lastIndex) {
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 68.dp)
+                                    .height(1.dp)
+                                    .background(
+                                        WinxDarkBlue.copy(
+                                            alpha = 0.15f
+                                        )
+                                    )
+                            )
+                        }
                     }
                 }
             }
@@ -1112,7 +1264,6 @@ private fun EntryLibraryContent(
         )
     }
 }
-
 
 // =====================================================================
 // COUNTRY ENTRY ROW
@@ -1255,6 +1406,49 @@ private fun CountryEntryRow(
     }
 }
 
+// =====================================================================
+// COUNTRY FLAGS
+// =====================================================================
+
+private fun getCountryFlag(
+    country: String
+): String {
+
+    return when (country.trim().lowercase()) {
+
+        "south africa" -> "🇿🇦"
+
+        "italy" -> "🇮🇹"
+
+        "jamaica" -> "🇯🇲"
+
+        "japan" -> "🇯🇵"
+
+        "spain" -> "🇪🇸"
+
+        "france" -> "🇫🇷"
+
+        "germany" -> "🇩🇪"
+
+        "united kingdom" -> "🇬🇧"
+
+        "usa",
+        "united states",
+        "united states of america" -> "🇺🇸"
+
+        "china" -> "🇨🇳"
+
+        "india" -> "🇮🇳"
+
+        "thailand" -> "🇹🇭"
+
+        "kenya" -> "🇰🇪"
+
+        "norway" -> "🇳🇴"
+
+        else -> "🌍"
+    }
+}
 
 // =====================================================================
 // LIBRARY COLOURS
