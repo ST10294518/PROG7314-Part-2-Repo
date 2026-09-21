@@ -1,5 +1,8 @@
 package com.winx.app.screens
 
+import com.winx.app.utils.T
+import com.winx.app.utils.winxFieldColors
+
 import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +73,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Capture places. Cherish moments.\nRemember every journey.",
+            text = T("Capture places. Cherish moments.\nRemember every journey."),
             style = MaterialTheme.typography.bodyLarge,
             color = WinxDarkBlue
         )
@@ -78,7 +81,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(28.dp))
 
         Text(
-            text = "Create your account",
+            text = T("Create your account"),
             style = MaterialTheme.typography.headlineMedium,
             color = WinxDarkBlue
         )
@@ -93,10 +96,11 @@ fun RegisterScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text("Username")
+                Text(T("Username"))
             },
             singleLine = true,
             enabled = !isLoading,
+            colors = winxFieldColors(),
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -110,10 +114,11 @@ fun RegisterScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text("Email")
+                Text(T("Email"))
             },
             singleLine = true,
             enabled = !isLoading,
+            colors = winxFieldColors(),
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -127,11 +132,12 @@ fun RegisterScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text("Password")
+                Text(T("Password"))
             },
             singleLine = true,
             enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
+            colors = winxFieldColors(),
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -145,11 +151,12 @@ fun RegisterScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text("Confirm Password")
+                Text(T("Confirm Password"))
             },
             singleLine = true,
             enabled = !isLoading,
             visualTransformation = PasswordVisualTransformation(),
+            colors = winxFieldColors(),
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -270,7 +277,7 @@ fun RegisterScreen(
                 )
             } else {
                 Text(
-                    text = "Create Account",
+                    text = T("Create Account"),
                     style = MaterialTheme.typography.labelLarge
                 )
             }

@@ -1,5 +1,12 @@
 package com.winx.app.screens
 
+import android.content.Context
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.auth.FirebaseAuth
+import com.winx.app.utils.T
+import com.winx.app.utils.winxGreeting
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,8 +68,18 @@ fun DashboardScreen(
     onEntryClick: () -> Unit = {},
     onCalendarClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
-    onSettingsClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {},
+    onNotificationsClick: () -> Unit = {}
 ) {
+
+    val context = LocalContext.current
+    val firebaseUser = FirebaseAuth.getInstance().currentUser
+    val profilePreferences = context.getSharedPreferences("winx_profile", Context.MODE_PRIVATE)
+    val displayName = profilePreferences.getString("name", null)
+        ?.trim()
+        ?.takeIf { it.isNotBlank() }
+        ?: firebaseUser?.displayName?.trim()?.takeIf { it.isNotBlank() }
+        ?: "User"
 
     Column(
         modifier = Modifier
@@ -95,7 +112,7 @@ fun DashboardScreen(
             ) {
 
                 Text(
-                    text = "Winx",
+                    text = T("Winx"),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = WinxDarkBlue
@@ -109,7 +126,8 @@ fun DashboardScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(WinxLightDashboard),
+                            .background(WinxLightDashboard)
+                            .clickable { onNotificationsClick() },
                         contentAlignment = Alignment.Center
                     ) {
 
@@ -162,7 +180,7 @@ fun DashboardScreen(
                 ) {
 
                     Text(
-                        text = "Good Morning Mia!",
+                        text = winxGreeting(displayName),
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         color = WinxDarkBlue
@@ -171,7 +189,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = "Welcome Back",
+                        text = T("Welcome Back"),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = WinxDarkBlue
@@ -180,7 +198,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Every Place has a story,\nwhat will you capture today??",
+                        text = T("Every Place has a story,\nwhat will you capture today??"),
                         fontSize = 15.sp,
                         color = WinxDarkBlue,
                         lineHeight = 21.sp
@@ -214,7 +232,7 @@ fun DashboardScreen(
                             Spacer(modifier = Modifier.width(6.dp))
 
                             Text(
-                                text = "Add Entry",
+                                text = T("Add Entry"),
                                 color = WinxWhite
                             )
                         }
@@ -239,7 +257,7 @@ fun DashboardScreen(
                             Spacer(modifier = Modifier.width(6.dp))
 
                             Text(
-                                text = "Add Country",
+                                text = T("Add Country"),
                                 color = WinxDarkBlue
                             )
                         }
@@ -262,7 +280,7 @@ fun DashboardScreen(
             ) {
 
                 Text(
-                    text = "Calendar",
+                    text = T("Calendar"),
                     fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = WinxDarkBlue
@@ -273,7 +291,7 @@ fun DashboardScreen(
                 ) {
 
                     Text(
-                        text = "View All",
+                        text = T("View All"),
                         color = WinxBlue
                     )
 
@@ -303,7 +321,7 @@ fun DashboardScreen(
                 ) {
 
                     Text(
-                        text = "September 2026",
+                        text = T("September 2026"),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         color = WinxDarkBlue
@@ -342,7 +360,7 @@ fun DashboardScreen(
             ) {
 
                 Text(
-                    text = "Entries",
+                    text = T("Entries"),
                     fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = WinxDarkBlue
@@ -353,7 +371,7 @@ fun DashboardScreen(
                 ) {
 
                     Text(
-                        text = "View All",
+                        text = T("View All"),
                         color = WinxBlue
                     )
 
@@ -403,7 +421,7 @@ fun DashboardScreen(
             ) {
 
                 Text(
-                    text = "Recent Dishes",
+                    text = T("Recent Dishes"),
                     fontSize = 21.sp,
                     fontWeight = FontWeight.Bold,
                     color = WinxDarkBlue
@@ -414,7 +432,7 @@ fun DashboardScreen(
                 ) {
 
                     Text(
-                        text = "View All",
+                        text = T("View All"),
                         color = WinxBlue
                     )
 

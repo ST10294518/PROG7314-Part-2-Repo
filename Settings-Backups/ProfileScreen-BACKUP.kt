@@ -1,8 +1,5 @@
 package com.winx.app.screens
 
-import com.winx.app.utils.T
-import com.winx.app.utils.winxFieldColors
-
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -102,10 +99,6 @@ fun ProfileScreen(
         mutableStateOf(false)
     }
 
-    var profileError by remember {
-        mutableStateOf("")
-    }
-
     Scaffold(
 
         topBar = {
@@ -113,7 +106,7 @@ fun ProfileScreen(
             TopAppBar(
 
                 title = {
-                    Text(T("Profile"))
+                    Text("Profile")
                 },
 
                 navigationIcon = {
@@ -179,7 +172,7 @@ fun ProfileScreen(
 
 
             Text(
-                text = T("View and manage your personal information."),
+                text = "View and manage your personal information.",
                 style = MaterialTheme.typography.bodySmall
             )
 
@@ -195,17 +188,15 @@ fun ProfileScreen(
                 onValueChange = {
                     name = it
                     saved = false
-                    profileError = ""
                 },
 
                 label = {
-                    Text(T("Full Name"))
+                    Text("Full Name")
                 },
 
                 enabled = editing,
 
-                modifier = Modifier.fillMaxWidth(),
-                colors = winxFieldColors()
+                modifier = Modifier.fillMaxWidth()
             )
 
 
@@ -220,13 +211,12 @@ fun ProfileScreen(
                 onValueChange = {},
 
                 label = {
-                    Text(T("Email Address"))
+                    Text("Email Address")
                 },
 
                 enabled = false,
 
-                modifier = Modifier.fillMaxWidth(),
-                colors = winxFieldColors()
+                modifier = Modifier.fillMaxWidth()
             )
 
 
@@ -241,17 +231,15 @@ fun ProfileScreen(
                 onValueChange = {
                     phone = it
                     saved = false
-                    profileError = ""
                 },
 
                 label = {
-                    Text(T("Phone Number"))
+                    Text("Phone Number")
                 },
 
                 enabled = editing,
 
-                modifier = Modifier.fillMaxWidth(),
-                colors = winxFieldColors()
+                modifier = Modifier.fillMaxWidth()
             )
 
 
@@ -266,17 +254,15 @@ fun ProfileScreen(
                 onValueChange = {
                     dateOfBirth = it
                     saved = false
-                    profileError = ""
                 },
 
                 label = {
-                    Text(T("Date of Birth"))
+                    Text("Date of Birth")
                 },
 
                 enabled = editing,
 
-                modifier = Modifier.fillMaxWidth(),
-                colors = winxFieldColors()
+                modifier = Modifier.fillMaxWidth()
             )
 
 
@@ -291,17 +277,15 @@ fun ProfileScreen(
                 onValueChange = {
                     country = it
                     saved = false
-                    profileError = ""
                 },
 
                 label = {
-                    Text(T("Country"))
+                    Text("Country")
                 },
 
                 enabled = editing,
 
-                modifier = Modifier.fillMaxWidth(),
-                colors = winxFieldColors()
+                modifier = Modifier.fillMaxWidth()
             )
 
 
@@ -320,27 +304,7 @@ fun ProfileScreen(
 
                     onClick = {
 
-                        val normalizedPhone = phone.filter { it.isDigit() || it == '+' }
-                        val phoneDigits = normalizedPhone.count { it.isDigit() }
-
-                        when {
-                            name.trim().isBlank() -> {
-                                saved = false
-                                profileError = "Please enter your full name."
-                            }
-                            phoneDigits !in 7..15 -> {
-                                saved = false
-                                profileError = "Enter a valid phone number (7–15 digits)."
-                            }
-                            country.trim().isBlank() -> {
-                                saved = false
-                                profileError = "Please enter your country."
-                            }
-                            else -> {
-                                phone = normalizedPhone
-                                profileError = ""
-
-                                preferences
+                        preferences
                             .edit()
                             .putString(
                                 "name",
@@ -373,24 +337,13 @@ fun ProfileScreen(
                             editing = false
                             saved = true
                         }
-                            }
-                        }
                     },
 
                     modifier = Modifier.fillMaxWidth()
                 ) {
 
-                    Text(T("Save Profile"))
+                    Text("Save Profile")
                 }
-            }
-
-
-            if (profileError.isNotBlank()) {
-                Text(
-                    text = profileError,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
             }
 
 
@@ -401,7 +354,7 @@ fun ProfileScreen(
             if (saved) {
 
                 Text(
-                    text = T("Profile saved successfully."),
+                    text = "Profile saved successfully.",
                     color = MaterialTheme.colorScheme.primary
                 )
             }

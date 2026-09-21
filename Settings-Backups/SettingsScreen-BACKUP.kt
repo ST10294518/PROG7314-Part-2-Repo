@@ -1,7 +1,5 @@
 package com.winx.app.screens
 
-import com.winx.app.utils.T
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +63,7 @@ fun SettingsScreen(
                 title = {
 
                     Text(
-                        text = T("Settings"),
+                        text = "Settings",
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -106,13 +104,13 @@ fun SettingsScreen(
             // -----------------------------------------------------
 
             Text(
-                text = T("Settings"),
+                text = "Settings",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = T("Manage your Winx preferences."),
+                text = "Manage your Winx preferences.",
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -213,7 +211,7 @@ fun SettingsScreen(
             ) {
 
                 Text(
-                    text = T("Log Out"),
+                    text = "Log Out",
                     color = WinxBlue,
                     fontWeight = FontWeight.Bold
                 )

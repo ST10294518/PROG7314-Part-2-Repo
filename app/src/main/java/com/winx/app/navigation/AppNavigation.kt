@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -71,6 +72,9 @@ fun AppNavigation() {
     var googleSignInError by remember {
         mutableStateOf<String?>(null)
     }
+
+    // Forces the current Compose destination to refresh after a language change.
+    var languageRefreshKey by remember { mutableIntStateOf(0) }
 
     // =============================================================
     // REST API REPOSITORY
@@ -164,6 +168,8 @@ fun AppNavigation() {
     // =============================================================
     // NAVIGATION
     // =============================================================
+
+    val currentLanguageRefresh = languageRefreshKey
 
     NavHost(
         navController = navController,
@@ -306,6 +312,10 @@ fun AppNavigation() {
 
                 onSettingsClick = {
                     navController.navigate("settings")
+                },
+
+                onNotificationsClick = {
+                    navController.navigate("notifications")
                 }
             )
         }
@@ -384,6 +394,9 @@ fun AppNavigation() {
             LanguageScreen(
                 onBack = {
                     navController.popBackStack()
+                },
+                onLanguageChanged = {
+                    languageRefreshKey++
                 }
             )
         }
@@ -453,6 +466,10 @@ fun AppNavigation() {
             EntriesScreen(
 
                 entries = entries,
+
+                onBack = {
+                    navController.popBackStack()
+                },
 
                 onAddEntryClick = {
                     navController.navigate("entry")
@@ -586,14 +603,6 @@ fun AppNavigation() {
             EntryScreen(
 
                 selectedCountry = selectedCountry,
-
-                onPicturesClick = {
-                    // Picture picker handled inside EntryScreen.
-                },
-
-                onVideosClick = {
-                    // Video picker handled inside EntryScreen.
-                },
 
                 onCountriesClick = {
                     navController.navigate("countries")
@@ -901,6 +910,3 @@ fun AppNavigation() {
         )
     }
 }
-
-
-

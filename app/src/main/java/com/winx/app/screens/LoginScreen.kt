@@ -1,5 +1,8 @@
 package com.winx.app.screens
 
+import com.winx.app.utils.T
+import com.winx.app.utils.winxFieldColors
+
 import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -117,8 +120,7 @@ fun LoginScreen(
 
 
         Text(
-            text =
-                "Capture places. Cherish moments.\n" +
+            text = T("Capture places. Cherish moments.\n") +
                         "Remember every journey.",
             style = MaterialTheme.typography.bodyLarge,
             color = WinxDarkBlue
@@ -131,7 +133,7 @@ fun LoginScreen(
 
 
         Text(
-            text = "Welcome Back !!",
+            text = T("Welcome Back !!"),
             style = MaterialTheme.typography.headlineMedium,
             color = WinxDarkBlue
         )
@@ -157,9 +159,10 @@ fun LoginScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text("Email")
+                Text(T("Email"))
             },
             singleLine = true,
+            colors = winxFieldColors(),
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -183,11 +186,12 @@ fun LoginScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text("Password")
+                Text(T("Password"))
             },
             singleLine = true,
             visualTransformation =
                 PasswordVisualTransformation(),
+            colors = winxFieldColors(),
             shape = RoundedCornerShape(12.dp)
         )
 
@@ -254,7 +258,7 @@ fun LoginScreen(
         ) {
 
             Text(
-                text = "Forgot Password?",
+                text = T("Forgot Password?"),
                 color = WinxBlue
             )
         }
@@ -407,7 +411,7 @@ fun LoginScreen(
             } else {
 
                 Text(
-                    text = "Login",
+                    text = T("Login"),
                     style =
                         MaterialTheme.typography.labelLarge
                 )
@@ -429,7 +433,7 @@ fun LoginScreen(
 
 
         Text(
-            text = "OR",
+            text = T("OR"),
             style =
                 MaterialTheme.typography.bodyMedium,
             color = WinxDarkBlue
@@ -476,8 +480,7 @@ fun LoginScreen(
             } else {
 
                 Text(
-                    text =
-                        "Continue with Google",
+                    text = T("Continue with Google"),
                     color = WinxDarkBlue
                 )
             }
@@ -521,7 +524,7 @@ fun LoginScreen(
         ) {
 
             Text(
-                text = "Create Account",
+                text = T("Create Account"),
                 color = WinxDarkBlue
             )
         }

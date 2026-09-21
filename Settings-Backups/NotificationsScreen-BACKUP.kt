@@ -1,7 +1,5 @@
 package com.winx.app.screens
 
-import com.winx.app.utils.T
-
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,7 +78,7 @@ fun NotificationsScreen(
             TopAppBar(
 
                 title = {
-                    Text(T("Notifications"))
+                    Text("Notifications")
                 },
 
                 navigationIcon = {
@@ -142,7 +140,7 @@ fun NotificationsScreen(
 
                     Text(
 
-                        text = T("Stay Updated"),
+                        text = "Stay Updated",
 
                         modifier = Modifier
                             .weight(1f)
@@ -173,7 +171,7 @@ fun NotificationsScreen(
 
 
             Text(
-                text = T("Recent Notifications")
+                text = "Recent Notifications"
             )
 
 

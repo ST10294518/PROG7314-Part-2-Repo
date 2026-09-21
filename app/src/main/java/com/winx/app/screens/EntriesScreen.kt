@@ -1,5 +1,7 @@
 package com.winx.app.screens
 
+import com.winx.app.utils.T
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Button
@@ -22,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,6 +43,7 @@ import com.winx.app.ui.theme.WinxWhite
 @Composable
 fun EntriesScreen(
     entries: List<TravelEntry> = emptyList(),
+    onBack: () -> Unit = {},
     onAddEntryClick: () -> Unit = {},
     onEntryClick: (TravelEntry) -> Unit = {}
 ) {
@@ -53,18 +58,23 @@ fun EntriesScreen(
         // HEADER
         // ---------------------------------------------------------
 
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(WinxDarkBlue)
-                .padding(
-                    horizontal = 20.dp,
-                    vertical = 20.dp
-                )
+                .padding(horizontal = 12.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Text(
-                text = "My Entries",
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = WinxWhite
+                )
+            }
+            Column(modifier = Modifier.padding(start = 4.dp)) {
+                Text(
+                    text = T("My Entries"),
                 color = WinxWhite,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold
@@ -75,10 +85,11 @@ fun EntriesScreen(
             )
 
             Text(
-                text = "Your travel memories",
+                text = T("Your travel memories"),
                 color = Color.White.copy(alpha = 0.8f),
                 fontSize = 14.sp
             )
+            }
         }
 
 
@@ -108,7 +119,7 @@ fun EntriesScreen(
                 )
 
                 Text(
-                    text = "No entries yet",
+                    text = T("No entries yet"),
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = WinxDarkBlue
@@ -119,7 +130,7 @@ fun EntriesScreen(
                 )
 
                 Text(
-                    text = "Start capturing your journey by creating your first entry.",
+                    text = T("Start capturing your journey by creating your first entry."),
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -146,7 +157,7 @@ fun EntriesScreen(
                     )
 
                     Text(
-                        text = "Add Entry",
+                        text = T("Add Entry"),
                         color = WinxDarkBlue,
                         fontWeight = FontWeight.Bold
                     )

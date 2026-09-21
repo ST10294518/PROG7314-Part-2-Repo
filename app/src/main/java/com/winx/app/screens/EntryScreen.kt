@@ -11,8 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -81,8 +81,6 @@ import com.winx.app.ui.theme.WinxWhite
 
 @Composable
 fun EntryScreen(
-    onPicturesClick: () -> Unit = {},
-    onVideosClick: () -> Unit = {},
     onCountriesClick: () -> Unit = {},
     onSaveClick: (TravelEntry) -> Unit = {},
     onCancelClick: () -> Unit = {},
@@ -96,6 +94,14 @@ fun EntryScreen(
     // -------------------------------------------------------------
 
     val context = LocalContext.current
+
+    val displayDate = remember {
+        SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH).format(Date())
+    }
+
+    val entryDate = remember {
+        SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date())
+    }
 
 
     // -------------------------------------------------------------
@@ -750,17 +756,15 @@ fun EntryScreen(
                         )
 
                         Text(
-                            text = if (selectedCountry.isNotEmpty()) {
-                                selectedCountry
-                            } else {
+                            text = selectedCountry.ifEmpty {
                                 "Select a country"
                             },
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (selectedCountry.isNotEmpty()) {
-                                WinxDarkBlue
-                            } else {
+                            color = if (selectedCountry.isEmpty()) {
                                 Color.Gray
+                            } else {
+                                WinxDarkBlue
                             }
                         )
                     }
@@ -774,10 +778,10 @@ fun EntryScreen(
                     ) {
 
                         Text(
-                            text = if (selectedCountry.isNotEmpty()) {
-                                "Change"
-                            } else {
+                            text = if (selectedCountry.isEmpty()) {
                                 "Add"
+                            } else {
+                                "Change"
                             },
                             color = WinxBlue
                         )
@@ -836,7 +840,7 @@ fun EntryScreen(
 
 
                         Text(
-                            text = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ENGLISH)),
+                            text = displayDate,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = WinxDarkBlue
@@ -1023,7 +1027,7 @@ fun EntryScreen(
                                 title = title.trim(),
                                 location = location.trim(),
                                 country = selectedCountry.trim(),
-                                date = LocalDate.now().toString(),
+                                date = entryDate,
                                 rating = rating,
                                 notes = notes.trim()
                             )

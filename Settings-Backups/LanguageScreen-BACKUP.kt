@@ -1,7 +1,5 @@
 package com.winx.app.screens
 
-import com.winx.app.utils.T
-
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,8 +33,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanguageScreen(
-    onBack: () -> Unit,
-    onLanguageChanged: () -> Unit = {}
+    onBack: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -51,7 +48,9 @@ fun LanguageScreen(
     val languages = listOf(
         "English (US)",
         "isiZulu (Zulu)",
-        "Afrikaans"
+        "Afrikaans",
+        "Italiano (Italian)",
+        "Deutsch (German)"
     )
 
     var selectedLanguage by remember {
@@ -75,7 +74,7 @@ fun LanguageScreen(
             TopAppBar(
 
                 title = {
-                    Text(T("Language"))
+                    Text("Language")
                 },
 
                 navigationIcon = {
@@ -111,11 +110,11 @@ fun LanguageScreen(
             )
 
             Text(
-                text = T("Change App Language")
+                text = "Change App Language"
             )
 
             Text(
-                text = T("Select the language you would like to use throughout the app.")
+                text = "Select the language you would like to use throughout the app."
             )
 
             Spacer(
@@ -171,20 +170,19 @@ fun LanguageScreen(
                         .apply()
 
                     saved = true
-                    onLanguageChanged()
                 },
 
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                Text(T("Save Language"))
+                Text("Save Language")
             }
 
 
             if (saved) {
 
                 Text(
-                    text = T("Language preference saved.")
+                    text = "Language preference saved."
                 )
             }
         }
