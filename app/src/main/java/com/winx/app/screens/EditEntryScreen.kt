@@ -20,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import com.winx.app.ui.theme.WinxDarkBlue
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
+import com.winx.app.ui.theme.WinxBlue
 
 @Composable
 fun EditEntryScreen(
@@ -62,6 +64,10 @@ fun EditEntryScreen(
         mutableStateOf(entry.country)
     }
 
+    var date by remember {
+        mutableStateOf(entry.date.take(10))
+    }
+
     var notes by remember {
         mutableStateOf(entry.notes)
     }
@@ -74,6 +80,16 @@ fun EditEntryScreen(
     var validationError by remember {
         mutableStateOf<String?>(null)
     }
+
+    val fieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = WinxDarkBlue,
+        unfocusedTextColor = WinxDarkBlue,
+        focusedLabelColor = WinxDarkBlue,
+        unfocusedLabelColor = WinxDarkBlue,
+        cursorColor = WinxDarkBlue,
+        focusedBorderColor = WinxBlue,
+        unfocusedBorderColor = WinxDarkBlue.copy(alpha = 0.45f)
+    )
 
     Column(
         modifier = Modifier
@@ -153,7 +169,8 @@ fun EditEntryScreen(
                     Text("Entry Title")
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors
             )
 
             Spacer(
@@ -184,7 +201,8 @@ fun EditEntryScreen(
                     )
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors
             )
 
             Spacer(
@@ -208,7 +226,31 @@ fun EditEntryScreen(
                     Text("Country")
                 },
                 singleLine = true,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors
+            )
+
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
+            // ---------------------------------------------------------
+            // DATE
+            // ---------------------------------------------------------
+
+            OutlinedTextField(
+                value = date,
+                onValueChange = {
+                    date = it
+                    validationError = null
+                },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text("Date (yyyy-MM-dd)")
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors
             )
 
             Spacer(
@@ -304,7 +346,8 @@ fun EditEntryScreen(
                     Text("Notes")
                 },
                 maxLines = 5,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                colors = fieldColors
             )
 
             // =========================================================
@@ -381,6 +424,9 @@ fun EditEntryScreen(
                             country.isBlank() ->
                                 "Please enter a country."
 
+                            !date.matches(Regex("""\d{4}-\d{2}-\d{2}""")) ->
+                                "Please enter the date in yyyy-MM-dd format."
+
                             rating !in 1..5 ->
                                 "Please select a rating from 1 to 5 stars."
 
@@ -401,6 +447,7 @@ fun EditEntryScreen(
                                 title = title.trim(),
                                 location = location.trim(),
                                 country = country.trim(),
+                                date = date.trim(),
                                 rating = rating,
                                 notes = notes.trim()
                             )

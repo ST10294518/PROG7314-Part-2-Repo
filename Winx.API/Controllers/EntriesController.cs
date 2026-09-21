@@ -106,6 +106,7 @@ public class EntriesController : ControllerBase
         existingEntry.Title = updatedEntry.Title;
         existingEntry.Location = updatedEntry.Location;
         existingEntry.Country = updatedEntry.Country;
+        existingEntry.Date = updatedEntry.Date;
         existingEntry.Rating = updatedEntry.Rating;
         existingEntry.Notes = updatedEntry.Notes;
 

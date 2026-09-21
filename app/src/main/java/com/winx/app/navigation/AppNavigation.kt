@@ -116,6 +116,10 @@ fun AppNavigation() {
         mutableStateOf<String?>(null)
     }
 
+    var entriesLoading by remember {
+        mutableStateOf(false)
+    }
+
     // =============================================================
     // DELETE CONFIRMATION
     // =============================================================
@@ -131,6 +135,8 @@ fun AppNavigation() {
     fun loadEntries() {
 
         coroutineScope.launch {
+
+            entriesLoading = true
 
             Log.d(
                 "AppNavigation",
@@ -162,6 +168,8 @@ fun AppNavigation() {
                         exception
                     )
                 }
+
+            entriesLoading = false
         }
     }
 
@@ -279,7 +287,21 @@ fun AppNavigation() {
 
         composable("dashboard") {
 
+            LaunchedEffect(Unit) {
+                loadEntries()
+            }
+
             DashboardScreen(
+                entries = entries,
+                isLoadingEntries = entriesLoading,
+                entriesError = apiError,
+                onRetryEntries = {
+                    loadEntries()
+                },
+                onEntryDetailsClick = { entry ->
+                    selectedEntry = entry
+                    navController.navigate("entryDetails")
+                },
 
                 onAddEntryClick = {
                     navController.navigate("entry")
@@ -693,7 +715,21 @@ fun AppNavigation() {
 
         composable("calendar") {
 
+            LaunchedEffect(Unit) {
+                loadEntries()
+            }
+
             CalendarScreen(
+                entries = entries,
+                isLoading = entriesLoading,
+                errorMessage = apiError,
+                onRetry = {
+                    loadEntries()
+                },
+                onEntryDetailsClick = { entry ->
+                    selectedEntry = entry
+                    navController.navigate("entryDetails")
+                },
 
                 onDashboardClick = {
 
