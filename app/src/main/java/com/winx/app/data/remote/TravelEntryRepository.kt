@@ -255,6 +255,7 @@ class TravelEntryRepository {
             title = title,
             location = location,
             country = country,
+            date = date,
             rating = rating,
             notes = notes
         )
@@ -267,8 +268,11 @@ class TravelEntryRepository {
             title = title,
             location = location,
             country = country,
+            date = date,
             rating = rating,
             notes = notes
         )
     }
 }
+
+

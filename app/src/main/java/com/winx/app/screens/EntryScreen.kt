@@ -11,6 +11,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -131,6 +134,14 @@ fun EntryScreen(
 
     var rating by remember {
         mutableIntStateOf(0)
+    }
+
+    // -------------------------------------------------------------
+    // VALIDATION
+    // -------------------------------------------------------------
+
+    var validationError by remember {
+        mutableStateOf<String?>(null)
     }
 
 
@@ -297,7 +308,10 @@ fun EntryScreen(
                         )
                     },
                     backgroundColor = WinxOrange,
-                    onClick = onCountriesClick,
+                    onClick = {
+                        validationError = null
+                        onCountriesClick()
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -629,6 +643,7 @@ fun EntryScreen(
                 value = title,
                 onValueChange = {
                     title = it
+                    validationError = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -655,6 +670,7 @@ fun EntryScreen(
                 value = location,
                 onValueChange = {
                     location = it
+                    validationError = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -689,7 +705,10 @@ fun EntryScreen(
                     .fillMaxWidth()
                     .clickable(
                         enabled = true,
-                        onClick = onCountriesClick
+                        onClick = {
+                            validationError = null
+                            onCountriesClick()
+                        }
                     ),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
@@ -748,7 +767,10 @@ fun EntryScreen(
 
 
                     TextButton(
-                        onClick = onCountriesClick
+                        onClick = {
+                            validationError = null
+                            onCountriesClick()
+                        }
                     ) {
 
                         Text(
@@ -814,7 +836,7 @@ fun EntryScreen(
 
 
                         Text(
-                            text = "19 September 2026",
+                            text = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ENGLISH)),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = WinxDarkBlue
@@ -865,6 +887,7 @@ fun EntryScreen(
                             .clickable {
 
                                 rating = star
+                                validationError = null
                             }
                     )
                 }
@@ -884,6 +907,7 @@ fun EntryScreen(
                 value = notes,
                 onValueChange = {
                     notes = it
+                    validationError = null
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -899,9 +923,33 @@ fun EntryScreen(
             )
 
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            // ---------------------------------------------------------
+            // VALIDATION ERROR
+            // ---------------------------------------------------------
+
+            if (validationError != null) {
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                Text(
+                    text = validationError!!,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+
+            } else {
+
+                Spacer(
+                    modifier = Modifier.height(24.dp)
+                )
+            }
 
 
             // ---------------------------------------------------------
@@ -949,19 +997,39 @@ fun EntryScreen(
                 Button(
                     onClick = {
 
-                        // Create a TravelEntry using the information
-                        // entered by the user.
-                        val newEntry = TravelEntry(
-                            title = title,
-                            location = location,
-                            country = selectedCountry,
-                            rating = rating,
-                            notes = notes
-                        )
+                        validationError = when {
 
-                        // Send the completed entry back to the
-                        // navigation layer.
-                        onSaveClick(newEntry)
+                            title.isBlank() ->
+                                "Please enter an entry title."
+
+                            location.isBlank() ->
+                                "Please enter a location."
+
+                            selectedCountry.isBlank() ->
+                                "Please select a country."
+
+                            rating !in 1..5 ->
+                                "Please select a rating from 1 to 5 stars."
+
+                            notes.isBlank() ->
+                                "Please enter some notes about your experience."
+
+                            else -> null
+                        }
+
+                        if (validationError == null) {
+
+                            val newEntry = TravelEntry(
+                                title = title.trim(),
+                                location = location.trim(),
+                                country = selectedCountry.trim(),
+                                date = LocalDate.now().toString(),
+                                rating = rating,
+                                notes = notes.trim()
+                            )
+
+                            onSaveClick(newEntry)
+                        }
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -1151,3 +1219,8 @@ private fun EntryNavigationItem(
         }
     }
 }
+
+
+
+
+

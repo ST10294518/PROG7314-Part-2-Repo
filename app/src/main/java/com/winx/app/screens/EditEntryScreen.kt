@@ -34,9 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.winx.app.ui.theme.WinxBlue
 import com.winx.app.ui.theme.WinxDarkBlue
-import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
@@ -47,6 +45,10 @@ fun EditEntryScreen(
     onBackClick: () -> Unit = {},
     onSaveClick: (TravelEntry) -> Unit = {}
 ) {
+
+    // =============================================================
+    // FORM STATE
+    // =============================================================
 
     var title by remember {
         mutableStateOf(entry.title)
@@ -66,6 +68,11 @@ fun EditEntryScreen(
 
     var rating by remember {
         mutableIntStateOf(entry.rating)
+    }
+
+    // Validation error message
+    var validationError by remember {
+        mutableStateOf<String?>(null)
     }
 
     Column(
@@ -137,6 +144,9 @@ fun EditEntryScreen(
                 value = title,
                 onValueChange = {
                     title = it
+
+                    // Clear validation message when user edits field
+                    validationError = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -158,6 +168,9 @@ fun EditEntryScreen(
                 value = location,
                 onValueChange = {
                     location = it
+
+                    // Clear validation message when user edits field
+                    validationError = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -186,6 +199,9 @@ fun EditEntryScreen(
                 value = country,
                 onValueChange = {
                     country = it
+
+                    // Clear validation message when user edits field
+                    validationError = null
                 },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -232,8 +248,6 @@ fun EditEntryScreen(
                             .size(34.dp)
                             .padding(1.dp)
                     )
-
-                    // Use a transparent clickable overlay through TextButton
                 }
             }
 
@@ -247,6 +261,9 @@ fun EditEntryScreen(
                     TextButton(
                         onClick = {
                             rating = star
+
+                            // Clear validation message when rating selected
+                            validationError = null
                         },
                         modifier = Modifier.weight(1f)
                     ) {
@@ -276,6 +293,9 @@ fun EditEntryScreen(
                 value = notes,
                 onValueChange = {
                     notes = it
+
+                    // Clear validation message when user edits field
+                    validationError = null
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -287,18 +307,46 @@ fun EditEntryScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            // =========================================================
+            // VALIDATION MESSAGE
+            // =========================================================
 
-            // ---------------------------------------------------------
+            if (validationError != null) {
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                Text(
+                    text = validationError!!,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+
+            } else {
+
+                Spacer(
+                    modifier = Modifier.height(24.dp)
+                )
+            }
+
+            // =========================================================
             // ACTIONS
-            // ---------------------------------------------------------
+            // =========================================================
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+
+                // -----------------------------------------------------
+                // CANCEL
+                // -----------------------------------------------------
 
                 TextButton(
                     onClick = onBackClick,
@@ -311,18 +359,54 @@ fun EditEntryScreen(
                     )
                 }
 
+                // -----------------------------------------------------
+                // UPDATE ENTRY
+                // -----------------------------------------------------
+
                 Button(
                     onClick = {
 
-                        val updatedEntry = entry.copy(
-                            title = title,
-                            location = location,
-                            country = country,
-                            rating = rating,
-                            notes = notes
-                        )
+                        // =================================================
+                        // VALIDATION
+                        // =================================================
 
-                        onSaveClick(updatedEntry)
+                        validationError = when {
+
+                            title.isBlank() ->
+                                "Please enter an entry title."
+
+                            location.isBlank() ->
+                                "Please enter a location."
+
+                            country.isBlank() ->
+                                "Please enter a country."
+
+                            rating !in 1..5 ->
+                                "Please select a rating from 1 to 5 stars."
+
+                            notes.isBlank() ->
+                                "Please enter some notes about your experience."
+
+                            else ->
+                                null
+                        }
+
+                        // =================================================
+                        // ONLY UPDATE IF VALID
+                        // =================================================
+
+                        if (validationError == null) {
+
+                            val updatedEntry = entry.copy(
+                                title = title.trim(),
+                                location = location.trim(),
+                                country = country.trim(),
+                                rating = rating,
+                                notes = notes.trim()
+                            )
+
+                            onSaveClick(updatedEntry)
+                        }
                     },
                     modifier = Modifier
                         .weight(1f)

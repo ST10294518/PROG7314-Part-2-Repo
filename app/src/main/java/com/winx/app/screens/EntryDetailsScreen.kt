@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -40,6 +40,10 @@ import com.winx.app.ui.theme.WinxLightPink
 import com.winx.app.ui.theme.WinxOrange
 import com.winx.app.ui.theme.WinxPurple
 import com.winx.app.ui.theme.WinxWhite
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.util.Locale
 
 @Composable
 fun EntryDetailsScreen(
@@ -48,6 +52,27 @@ fun EntryDetailsScreen(
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
 ) {
+
+    // =============================================================
+    // DATE FORMATTING
+    // =============================================================
+
+    val formattedDate = try {
+
+        LocalDate.parse(entry.date)
+            .format(
+                DateTimeFormatter.ofPattern(
+                    "dd MMMM yyyy",
+                    Locale.ENGLISH
+                )
+            )
+
+    } catch (exception: DateTimeParseException) {
+
+        entry.date.ifBlank {
+            "Date not specified"
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -99,6 +124,10 @@ fun EntryDetailsScreen(
                 .padding(20.dp)
         ) {
 
+            // =========================================================
+            // TITLE
+            // =========================================================
+
             Text(
                 text = entry.title.ifBlank {
                     "Untitled Entry"
@@ -111,6 +140,10 @@ fun EntryDetailsScreen(
             Spacer(
                 modifier = Modifier.height(8.dp)
             )
+
+            // =========================================================
+            // LOCATION
+            // =========================================================
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -129,6 +162,7 @@ fun EntryDetailsScreen(
 
                 Text(
                     text = when {
+
                         entry.location.isNotBlank() &&
                                 entry.country.isNotBlank() -> {
                             "${entry.location}, ${entry.country}"
@@ -256,7 +290,7 @@ fun EntryDetailsScreen(
                         )
 
                         Text(
-                            text = "19 September 2026",
+                            text = formattedDate,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = WinxDarkBlue
