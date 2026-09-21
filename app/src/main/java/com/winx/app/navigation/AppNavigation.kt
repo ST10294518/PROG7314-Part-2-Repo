@@ -11,19 +11,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.winx.app.auth.GoogleAuthManager
+import com.winx.app.screens.AboutUsScreen
 import com.winx.app.screens.CalendarScreen
 import com.winx.app.screens.CountriesScreen
 import com.winx.app.screens.DashboardScreen
 import com.winx.app.screens.EntriesScreen
 import com.winx.app.screens.EntryDetailsScreen
 import com.winx.app.screens.EntryScreen
+import com.winx.app.screens.LanguageScreen
 import com.winx.app.screens.LibraryScreen
 import com.winx.app.screens.LoginScreen
+import com.winx.app.screens.NotificationsScreen
+import com.winx.app.screens.ProfileScreen
+import com.winx.app.screens.RecentlyDeletedScreen
 import com.winx.app.screens.RegisterScreen
+import com.winx.app.screens.SecurityScreen
+import com.winx.app.screens.SettingsScreen
 import com.winx.app.screens.TravelEntry
 import com.winx.app.screens.WelcomeScreen
 import kotlinx.coroutines.launch
-
 
 @Composable
 fun AppNavigation() {
@@ -49,7 +55,6 @@ fun AppNavigation() {
         mutableStateOf<String?>(null)
     }
 
-
     // -------------------------------------------------------------
     // SELECTED COUNTRY
     // -------------------------------------------------------------
@@ -57,7 +62,6 @@ fun AppNavigation() {
     var selectedCountry by remember {
         mutableStateOf("")
     }
-
 
     // -------------------------------------------------------------
     // SAVED ENTRIES
@@ -67,18 +71,16 @@ fun AppNavigation() {
         mutableStateOf<List<TravelEntry>>(emptyList())
     }
 
-
     // -------------------------------------------------------------
-    // CURRENT ENTRY BEING VIEWED
+    // CURRENT ENTRY
     // -------------------------------------------------------------
 
     var selectedEntry by remember {
         mutableStateOf<TravelEntry?>(null)
     }
 
-
     // -------------------------------------------------------------
-    // NAVIGATION HOST
+    // NAVIGATION
     // -------------------------------------------------------------
 
     NavHost(
@@ -98,7 +100,6 @@ fun AppNavigation() {
                 }
             )
         }
-
 
         // =========================================================
         // LOGIN
@@ -164,7 +165,6 @@ fun AppNavigation() {
             )
         }
 
-
         // =========================================================
         // REGISTER
         // =========================================================
@@ -184,7 +184,6 @@ fun AppNavigation() {
                 }
             )
         }
-
 
         // =========================================================
         // DASHBOARD
@@ -221,11 +220,140 @@ fun AppNavigation() {
                 },
 
                 onSettingsClick = {
-                    // Settings screen will be connected later.
+                    navController.navigate("settings")
                 }
             )
         }
 
+        // =========================================================
+        // SETTINGS
+        // =========================================================
+
+        composable("settings") {
+
+            SettingsScreen(
+
+                onBack = {
+                    navController.popBackStack()
+                },
+
+                onProfileClick = {
+                    navController.navigate("profile")
+                },
+
+                onLanguageClick = {
+                    navController.navigate("language")
+                },
+
+                onRecentlyDeletedClick = {
+                    navController.navigate("recentlyDeleted")
+                },
+
+                onSecurityClick = {
+                    navController.navigate("security")
+                },
+
+                onNotificationsClick = {
+                    navController.navigate("notifications")
+                },
+
+                onAboutUsClick = {
+                    navController.navigate("aboutUs")
+                },
+
+                onLogout = {
+
+                    googleAuthManager.signOut()
+
+                    navController.navigate("welcome") {
+
+                        popUpTo("settings") {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        // =========================================================
+        // PROFILE
+        // =========================================================
+
+        composable("profile") {
+
+            ProfileScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // =========================================================
+        // LANGUAGE
+        // =========================================================
+
+        composable("language") {
+
+            LanguageScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // =========================================================
+        // RECENTLY DELETED
+        // =========================================================
+
+        composable("recentlyDeleted") {
+
+            RecentlyDeletedScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // =========================================================
+        // SECURITY
+        // =========================================================
+
+        composable("security") {
+
+            SecurityScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // =========================================================
+        // NOTIFICATIONS
+        // =========================================================
+
+        composable("notifications") {
+
+            NotificationsScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // =========================================================
+        // ABOUT US
+        // =========================================================
+
+        composable("aboutUs") {
+
+            AboutUsScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
         // =========================================================
         // MY ENTRIES
@@ -250,7 +378,6 @@ fun AppNavigation() {
             )
         }
 
-
         // =========================================================
         // ENTRY DETAILS
         // =========================================================
@@ -270,7 +397,6 @@ fun AppNavigation() {
             }
         }
 
-
         // =========================================================
         // CREATE ENTRY
         // =========================================================
@@ -282,11 +408,11 @@ fun AppNavigation() {
                 selectedCountry = selectedCountry,
 
                 onPicturesClick = {
-                    // Picture picker is handled inside EntryScreen.
+                    // Picture picker handled inside EntryScreen.
                 },
 
                 onVideosClick = {
-                    // Video picker is handled inside EntryScreen.
+                    // Video picker handled inside EntryScreen.
                 },
 
                 onCountriesClick = {
@@ -311,7 +437,6 @@ fun AppNavigation() {
             )
         }
 
-
         // =========================================================
         // COUNTRIES
         // =========================================================
@@ -332,7 +457,6 @@ fun AppNavigation() {
                 }
             )
         }
-
 
         // =========================================================
         // CALENDAR
@@ -369,11 +493,10 @@ fun AppNavigation() {
                 },
 
                 onSettingsClick = {
-                    // Settings screen will be connected later.
+                    navController.navigate("settings")
                 }
             )
         }
-
 
         // =========================================================
         // LIBRARY
@@ -410,7 +533,7 @@ fun AppNavigation() {
                 },
 
                 onSettingsClick = {
-                    // Settings screen will be connected later.
+                    navController.navigate("settings")
                 }
             )
         }
