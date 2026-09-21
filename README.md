@@ -1,4 +1,4 @@
-# Winx 🌍✈️
+# Winx 
 
 Github Link: https://github.com/EMKNDW/prog7314-g1-2026-prog7314-2026-poe-st10294518.git 
 
@@ -34,16 +34,16 @@ Winx lets users log the places they've visited (and the meals they've had along 
 
 ## Features
 
-- 🔐 **Authentication** — Email/password login & registration plus Google Sign-In (via Firebase Auth and Credential Manager)
-- 🏠 **Dashboard** — At-a-glance view of recent entries with quick actions
-- 📝 **Entry management** — Create, view, edit, and delete travel entries (title, location, country, date, rating, notes)
-- 🖼️ **Media attachments** — Attach and preview photos/videos per entry (Coil for images, Media3 ExoPlayer for video)
-- 📅 **Calendar view** — Browse entries by date
-- 📚 **Library** — Central hub linking to entries, calendar, and settings
-- 🌍 **Country picker** — Attach a country to each entry
-- ⚙️ **Settings suite** — Profile, Language, Notifications, Security, Recently Deleted, About Us
-- 🌐 **Multi-language support** — In-app English / isiZulu translation toggle
-- ☁️ **REST-backed persistence** — All entries and media are stored via the Winx.API backend (SQLite + Entity Framework Core)
+-  **Authentication** — Email/password login & registration plus Google Sign-In (via Firebase Auth and Credential Manager)
+-  **Dashboard** — At-a-glance view of recent entries with quick actions
+-  **Entry management** — Create, view, edit, and delete travel entries (title, location, country, date, rating, notes)
+-  **Media attachments** — Attach and preview photos/videos per entry (Coil for images, Media3 ExoPlayer for video)
+-  **Calendar view** — Browse entries by date
+-  **Library** — Central hub linking to entries, calendar, and settings
+-  **Country picker** — Attach a country to each entry
+-  **Settings suite** — Profile, Language, Notifications, Security, Recently Deleted, About Us
+-  **Multi-language support** — In-app English / isiZulu translation toggle
+-  **REST-backed persistence** — All entries and media are stored via the Winx.API backend (SQLite + Entity Framework Core)
 
 ## Tech Stack
 
@@ -152,6 +152,5 @@ The app includes a lightweight, in-app translation layer (`WinxLanguage.kt`) tha
 - The Retrofit base URL is currently hardcoded for local development (emulator/LAN) rather than a deployed endpoint.
 - Media files are referenced by file name/path rather than uploaded as binary content to the API.
 
-## Team
 
 Group project for **PROG7314 / OPSC7312** at The Independent Institute of Education (IIE).
